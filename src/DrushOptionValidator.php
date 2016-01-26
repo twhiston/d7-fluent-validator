@@ -22,14 +22,16 @@ class DrushOptionValidator {
    */
   private $options;
 
+  private $results;
+
   /**
    * DrushOptionValidator constructor.
    * @param null $rules
    */
-  public function __construct($rules = NULL) {
-    if(is_array($rules)) {
-      foreach($rules as $rule) {
-        $this->addOption($rule);
+  public function __construct($options = NULL) {
+    if(is_array($options)) {
+      foreach($options as $option) {
+        $this->addOption($option);
       }
     }
   }
@@ -38,8 +40,7 @@ class DrushOptionValidator {
    * @param Option $option
    */
   public function addOption(Option $option){
-
-      $options[$option->getOptionName()] = $option;
+      $this->options[$option->getOptionName()] = $option;
   }
 
   /**
@@ -47,20 +48,23 @@ class DrushOptionValidator {
    */
   public function validate($data){
 
-    /** @var ValidationResult $results */
-    $results = [];
+    /** @var ValidationResult[] $results */
+    $this->results = [];
     foreach($this->options as $option){
       if(array_key_exists($option->getOptionName(),$data)){
         $constraints = $option->getValidationConstraints();
-        foreach($constraints as $name => $constraint){
-          $results[] = call_user_func($constraint,$data[$option->getOptionName()]);
+        foreach($constraints as $constraint){
+          /** @var ValidationResult $result */
+          $result = $constraint->validate($data[$option->getOptionName()]);
+          $this->results[] = $result;
+          if(!$result->getState()){
+            return FALSE;
+          }
         }
       }
     }
-
     //TODO - logging and stuff
-
-
+    return TRUE;
   }
 
 }

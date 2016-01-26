@@ -26,6 +26,7 @@ class ConstraintFactory {
 
     try {
       if(in_array('Drupal\px\DrushOptionValidator\Constraint\Constraint',class_implements($class,true))){
+
         $instance = ConstraintFactory::instantiate($class,$args);
       }
       return $instance;
@@ -33,6 +34,25 @@ class ConstraintFactory {
       //TODO - Logging
       return NULL;
     }
+  }
+
+  static public function makeConstraints($constraints){
+
+    $cout = [];
+    foreach($constraints as $constraint){
+      if(array_key_exists('class',$constraint) && array_key_exists('args',$constraint) ){
+        $output = ConstraintFactory::makeConstraint($constraint['class'], $constraint['args']);
+        if($output != NULL){
+          $cout[] = $output;
+        } else {
+          //TODO logging
+        }
+      } else {
+        //TODO logging
+      }
+
+    }
+    return $cout;
   }
 
   static private function instantiate($class,&$args){

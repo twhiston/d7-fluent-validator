@@ -8,27 +8,51 @@
 
 namespace Drupal\px\DrushOptionValidator\Option;
 
+use Drupal\px\DrushOptionValidator\Constraint\Constraint;
 
 /**
  * Interface Option
- * @package Drupal\px\DrushOptionSanitizer
+ * @package Drupal\px\DrushOptionValidator
  */
-interface Option {
+class Option {
+
+  private $name;
+
+  /** @var  Constraint */
+  private $constraints;
+
+  private $default;
+
+
+  public function __construct($name, $constraints = NULL, $default = NULL) {
+
+    $this->name = $name;
+    $this->constraints = (!is_array($constraints))?array():$constraints;
+    $this->default = $default;
+
+  }
 
   /**
    * @return string
    */
-  public function getOptionName();
+  public function getOptionName(){
+    return $this->name;
+  }
 
   /**
    * @return mixed
    */
-  public function getDefaultValue();
+  public function getDefaultValue(){
+    return $this->default;
+  }
 
   /**
    * Should return an array of callables/closures, which return TRUE or FALSE
+   * Try using the Constraints factory to make this
    * @return Constraint[]
    */
-  public function getValidationConstraints();
+  public function getValidationConstraints(){
+    return $this->constraints;
+  }
 
 }

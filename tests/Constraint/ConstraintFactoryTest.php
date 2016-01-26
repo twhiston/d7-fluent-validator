@@ -52,4 +52,39 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
 
   }
 
+  public function testMakeConstraints(){
+
+
+    $constraints = [];
+    $constraints[] = [
+      'class' => 'Numeric\\GreaterThan',
+      'args' => array(5),
+    ];
+
+    $constraints[] = [
+      'class' => 'Numeric\\IsNumeric',
+      'args' => array(),
+    ];
+
+    $constraints[] = [
+      'class' => 'Broken\\Will Not Return',
+      'args' => array(7,11),
+    ];
+
+    $constraints[] = [
+      'class' => 'Numeric\\Between',
+      'args' => array(7,11),
+    ];
+
+
+    /** @var Constraint[] $constraint */
+    $constraints = ConstraintFactory::makeConstraints($constraints);
+
+    $this->assertCount(3,$constraints);
+    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
+    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\IsNumeric',$constraints[1]);
+    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\Between',$constraints[2]);
+
+  }
+
 }
