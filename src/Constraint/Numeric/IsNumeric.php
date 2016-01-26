@@ -8,6 +8,7 @@
 namespace Drupal\px\DrushOptionValidator\Constraint\Numeric;
 
 use Drupal\px\DrushOptionValidator\Constraint\Constraint;
+use Drupal\px\DrushOptionValidator\ValidationResult;
 
 /**
  * Created by PhpStorm.
@@ -19,7 +20,7 @@ class IsNumeric implements Constraint {
 
 
   public function validate($data) {
-    return is_numeric($data);
+    return new ValidationResult((is_numeric($data)));
   }
 
 }

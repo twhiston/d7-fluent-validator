@@ -3,6 +3,7 @@
 namespace Drupal\px\DrushOptionValidator\Constraint\Numeric;
 
 use Drupal\px\DrushOptionValidator\Constraint\Constraint;
+use Drupal\px\DrushOptionValidator\ValidationResult;
 
 /**
  * Created by PhpStorm.
@@ -10,7 +11,7 @@ use Drupal\px\DrushOptionValidator\Constraint\Constraint;
  * Date: 26/01/2016
  * Time: 15:18
  */
-class GreaterThanEquals implements Constraint {
+class GreaterThan implements Constraint {
 
   private $value;
 
@@ -19,7 +20,8 @@ class GreaterThanEquals implements Constraint {
   }
 
   public function validate($data) {
-    return ($data >= $this->value);
+    return new ValidationResult(($data > $this->value));
   }
+
 
 }

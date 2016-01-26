@@ -3,6 +3,7 @@
 namespace Drupal\px\DrushOptionValidator\Constraint\Numeric;
 
 use Drupal\px\DrushOptionValidator\Constraint\Constraint;
+use Drupal\px\DrushOptionValidator\ValidationResult;
 
 /**
  * Created by PhpStorm.
@@ -19,8 +20,7 @@ class LessThanEquals implements Constraint {
   }
 
   public function validate($data) {
-    // TODO: Implement validate() method.
-    return ($data <= $this->value);
+    return new ValidationResult(($data <= $this->value));
   }
 
 }

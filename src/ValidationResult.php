@@ -15,7 +15,7 @@ class ValidationResult {
 
   private $message;
 
-  public function __construct($state, $message) {
+  public function __construct($state, $message = NULL) {
     $this->state = $state;
     $this->message = $message;
   }

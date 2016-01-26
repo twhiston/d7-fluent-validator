@@ -17,7 +17,7 @@ interface Constraint {
 
   /**
    * @param $data
-   * @return ValidationResult[]
+   * @return ValidationResult
    */
   public function validate($data);
 
