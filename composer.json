@@ -1,5 +1,5 @@
 {
-  "name": "Drupal/px/DrushOptionValidator",
+  "name": "Drupal/twhiston/DrushOptionValidator",
   "autoload": {
     "psr-4" : {
       "Drupal\\twhiston\\DrushOptionValidator\\" : "src"
