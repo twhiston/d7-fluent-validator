@@ -45,7 +45,7 @@ class ConstraintFactory {
         if($output != NULL){
           $cout[] = $output;
         } else {
-          //TODO logging
+          throw new \Exception('Could not make constraint');
         }
       } else {
         //TODO logging
