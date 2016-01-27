@@ -6,13 +6,13 @@
  * Time: 14:19
  */
 
-namespace Drupal\px\DrushOptionValidator;
+namespace Drupal\twhiston\DrushOptionValidator;
 
-use Drupal\px\DrushOptionValidator\Option\Option;
+use Drupal\twhiston\DrushOptionValidator\Option\Option;
 
 /**
  * Class DrushOptionSanitizer
- * @package Drupal\px\DrushOptionValidator
+ * @package Drupal\twhiston\DrushOptionValidator
  */
 class DrushOptionValidator {
 

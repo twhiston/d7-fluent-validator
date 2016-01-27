@@ -1,8 +1,8 @@
 <?php
 
-use Drupal\px\DrushOptionValidator\Constraint\ConstraintFactory;
+use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
 
-use Drupal\px\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 
 /**
  * Created by PhpStorm.
@@ -17,8 +17,8 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     //Check that it works
     /** @var Constraint $constraint */
     $constraint = ConstraintFactory::makeConstraint('Numeric\\GreaterThan',array(5));
-    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Constraint',$constraint);
-    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraint);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Constraint',$constraint);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraint);
 
 
     $this->assertTrue($constraint->validate(10)->getState());
@@ -46,7 +46,7 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
       }
     ];
 
-    $constraint = ConstraintFactory::makeConstraint('Drupal\px\DrushOptionValidator\Constraint\CallableConstraint',$data);
+    $constraint = ConstraintFactory::makeConstraint('Drupal\twhiston\DrushOptionValidator\Constraint\CallableConstraint',$data);
     $this->assertTrue($constraint->validate('I Work')->getState());
     $this->assertFalse($constraint->validate('I suck')->getState());
 
@@ -81,9 +81,9 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     $constraints = ConstraintFactory::makeConstraints($constraints);
 
     $this->assertCount(3,$constraints);
-    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
-    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\IsNumeric',$constraints[1]);
-    $this->assertInstanceOf('Drupal\px\DrushOptionValidator\Constraint\Numeric\Between',$constraints[2]);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\IsNumeric',$constraints[1]);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between',$constraints[2]);
 
   }
 

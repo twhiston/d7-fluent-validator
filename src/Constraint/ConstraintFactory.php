@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\px\DrushOptionValidator\Constraint;
+namespace Drupal\twhiston\DrushOptionValidator\Constraint;
 
 use ReflectionClass;
 
-use Drupal\px\DrushOptionValidator\Constraint\Numeric\GreaterThan;
+use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan;
 /**
  * Created by PhpStorm.
  * User: Thomas Whiston
@@ -21,11 +21,11 @@ class ConstraintFactory {
     if($count = 0 || !(0 === strpos($class, 'Drupal')) ){
       //if there is no '/' we assume this is not a fully qualified namespace and make it our root Constraint namespace
       //If there is no drupal at the start then we assume its our class further down the tree
-      $class = 'Drupal\\px\\DrushOptionValidator\\Constraint\\'.$class;
+      $class = 'Drupal\\twhiston\\DrushOptionValidator\\Constraint\\'.$class;
     }
 
     try {
-      if(in_array('Drupal\px\DrushOptionValidator\Constraint\Constraint',class_implements($class,true))){
+      if(in_array('Drupal\twhiston\DrushOptionValidator\Constraint\Constraint',class_implements($class,true))){
 
         $instance = ConstraintFactory::instantiate($class,$args);
       }

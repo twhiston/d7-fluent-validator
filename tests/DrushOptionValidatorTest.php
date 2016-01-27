@@ -7,9 +7,9 @@
  * Time: 18:34
  */
 
-use Drupal\px\DrushOptionValidator\DrushOptionValidator;
-use Drupal\px\DrushOptionValidator\Option\Option;
-use Drupal\px\DrushOptionValidator\Constraint\ConstraintFactory;
+use Drupal\twhiston\DrushOptionValidator\DrushOptionValidator;
+use Drupal\twhiston\DrushOptionValidator\Option\Option;
+use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
 
 class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
 

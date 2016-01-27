@@ -6,12 +6,12 @@
  * Time: 14:48
  */
 
-namespace Drupal\px\DrushOptionValidator\Constraint;
+namespace Drupal\twhiston\DrushOptionValidator\Constraint;
 
 
 /**
  * Interface Constraint
- * @package Drupal\px\DrushOptionSanitizer
+ * @package Drupal\twhiston\DrushOptionSanitizer
  */
 interface Constraint {
 

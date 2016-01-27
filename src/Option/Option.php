@@ -6,13 +6,13 @@
  * Time: 14:21
  */
 
-namespace Drupal\px\DrushOptionValidator\Option;
+namespace Drupal\twhiston\DrushOptionValidator\Option;
 
-use Drupal\px\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 
 /**
  * Interface Option
- * @package Drupal\px\DrushOptionValidator
+ * @package Drupal\twhiston\DrushOptionValidator
  */
 class Option {
 

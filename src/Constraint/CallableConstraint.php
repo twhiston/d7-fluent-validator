@@ -6,10 +6,10 @@
  * Time: 15:39
  */
 
-namespace Drupal\px\DrushOptionValidator\Constraint;
+namespace Drupal\twhiston\DrushOptionValidator\Constraint;
 
 
-use Drupal\px\DrushOptionValidator\ValidationResult;
+use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
 class CallableConstraint implements Constraint {
 

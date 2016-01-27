@@ -6,10 +6,10 @@
  * Time: 20:40
  */
 
-namespace Drupal\px\DrushOptionValidator\Constraint\General;
+namespace Drupal\twhiston\DrushOptionValidator\Constraint\General;
 
-use Drupal\px\DrushOptionValidator\Constraint\Constraint;
-use Drupal\px\DrushOptionValidator\ValidationResult;
+use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
 class IsBool implements Constraint {
 

@@ -5,10 +5,10 @@
  * Date: 26/01/2016
  * Time: 15:27
  */
-namespace Drupal\px\DrushOptionValidator\Constraint\Numeric;
+namespace Drupal\twhiston\DrushOptionValidator\Constraint\Numeric;
 
-use Drupal\px\DrushOptionValidator\Constraint\Constraint;
-use Drupal\px\DrushOptionValidator\ValidationResult;
+use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
 /**
  * Created by PhpStorm.
