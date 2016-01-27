@@ -21,7 +21,7 @@ class LessThan implements Constraint {
   }
 
   public function validate($data) {
-    return new ValidationResult(($data > $this->value));
+    return new ValidationResult(($data < $this->value));
   }
 
 
