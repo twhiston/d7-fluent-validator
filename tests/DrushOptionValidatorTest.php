@@ -51,7 +51,7 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
     ];
 
     $options[] = new Option('field_2',ConstraintFactory::makeConstraints($constraints));
-    $options[] = new Option('field_3',ConstraintFactory::makeConstraints($constraints));
+    $options[] = new Option('field_3',ConstraintFactory::makeConstraints($constraints),666);
 
 
     $vali = new DrushOptionValidator($options);
@@ -64,7 +64,9 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
 
     $data['field_3'] = 100000000;
 
+    //If it fails it gets the default value
     $this->assertFalse($vali->validate($data));
+    $this->assertEquals(666,$data['field_3']);
 
   }
 

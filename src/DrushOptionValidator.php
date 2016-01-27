@@ -24,16 +24,19 @@ class DrushOptionValidator {
 
   private $results;
 
+  private $defaultOnFail;
+
   /**
    * DrushOptionValidator constructor.
    * @param null $rules
    */
-  public function __construct($options = NULL) {
+  public function __construct($options = NULL, $defaultOnFail = TRUE) {
     if(is_array($options)) {
       foreach($options as $option) {
         $this->addOption($option);
       }
     }
+    $this->defaultOnFail = $defaultOnFail;
   }
 
   /**
@@ -46,9 +49,10 @@ class DrushOptionValidator {
   /**
    * @param $data
    */
-  public function validate($data){
+  public function validate(&$data){
 
     /** @var ValidationResult[] $results */
+    $state = TRUE;
     $this->results = [];
     foreach($this->options as $option){
       if(array_key_exists($option->getOptionName(),$data)){
@@ -58,13 +62,16 @@ class DrushOptionValidator {
           $result = $constraint->validate($data[$option->getOptionName()]);
           $this->results[] = $result;
           if(!$result->getState()){
-            return FALSE;
+            $state = FALSE;
+            if($this->defaultOnFail) {
+              $data[$option->getOptionName()] = $option->getDefaultValue();
+            }
           }
         }
       }
     }
     //TODO - logging and stuff
-    return TRUE;
+    return $state;
   }
 
 }
