@@ -129,26 +129,4 @@ class NumericTest extends PHPUnit_Framework_TestCase {
 
   }
 
-  public function testIsNumeric(){
-    /** @var IsNumeric $t */
-    $t = new IsNumeric();
-    $r = $t->validate(1);
-    $this->assertTrue($r->getState());
-
-    $r = $t->validate(-931);
-    $this->assertTrue($r->getState());
-
-    $r = $t->validate(13332);
-    $this->assertTrue($r->getState());
-
-    $r = $t->validate('1');
-    $this->assertTrue($r->getState());
-
-    $r = $t->validate("343A1");
-    $this->assertFalse($r->getState());
-
-    $r = $t->validate("hello");
-    $this->assertFalse($r->getState());
-  }
-
 }

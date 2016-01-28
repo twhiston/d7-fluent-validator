@@ -21,26 +21,26 @@ class OptionTest extends PHPUnit_Framework_TestCase {
     ];
 
     $constraints[] = [
-      'class' => 'Numeric\\IsNumeric',
-      'args' => array(),
+      'class' => 'Numeric\\Between',
+      'args' => array(7,11),
     ];
+
+    $option = new Option('tester',ConstraintFactory::makeConstraints($constraints),666);
+
+    $this->assertCount(2,$option->getValidationConstraints());
+    $this->assertRegExp('/tester/',$option->getOptionName());
+    $this->assertEquals(666,$option->getDefaultValue());
 
     $constraints[] = [
       'class' => 'Broken\\Will Not Return',
       'args' => array(7,11),
     ];
 
-    $constraints[] = [
-      'class' => 'Numeric\\Between',
-      'args' => array(7,11),
-    ];
-
-
-    $option = new Option('tester',ConstraintFactory::makeConstraints($constraints),666);
-
-    $this->assertCount(3,$option->getValidationConstraints());
-    $this->assertRegExp('/tester/',$option->getOptionName());
-    $this->assertEquals(666,$option->getDefaultValue());
+    try {
+      $option = new Option('tester',ConstraintFactory::makeConstraints($constraints),666);
+    } catch (Exception $e){
+      $this->assertRegExp('/Could not make constraint/',$e->getMessage());
+    }
 
   }
 

@@ -24,21 +24,24 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
     ];
 
     $constraints[] = [
-      'class' => 'Numeric\\IsNumeric',
-      'args' => array(),
+      'class' => 'Numeric\\Between',
+      'args' => array(7,11),
     ];
+
+    $options[] = new Option('field_1',ConstraintFactory::makeConstraints($constraints));
 
     $constraints[] = [
       'class' => 'Broken\\Will Not Return',
       'args' => array(7,11),
     ];
 
-    $constraints[] = [
-      'class' => 'Numeric\\Between',
-      'args' => array(7,11),
-    ];
+    try {
+      $options[] = new Option('field_1',ConstraintFactory::makeConstraints($constraints));
+    } catch(Exception $e){
+      $this->assertRegExp('/Could not make constraint/',$e->getMessage());
+    }
 
-    $options[] = new Option('field_1',ConstraintFactory::makeConstraints($constraints));
+
 
     $constraints = [];
     $constraints[] = [

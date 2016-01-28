@@ -67,12 +67,6 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     ];
 
     $constraints[] = [
-      'class' => 'Numeric\\IsNumeric',
-      'args' => array(),
-    ];
-
-
-    $constraints[] = [
       'class' => 'Numeric\\Between',
       'args' => array(7,11),
     ];
@@ -80,10 +74,9 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     /** @var Constraint[] $constraint */
     $constraints = ConstraintFactory::makeConstraints($constraints);
 
-    $this->assertCount(3,$constraints);
+    $this->assertCount(2,$constraints);
     $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\IsNumeric',$constraints[1]);
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between',$constraints[2]);
+    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between',$constraints[1]);
 
 
     $constraints[] = [
