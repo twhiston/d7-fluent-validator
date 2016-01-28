@@ -6,7 +6,7 @@
  * Time: 14:21
  */
 
-namespace Drupal\twhiston\DrushOptionValidator\Rule;
+namespace Drupal\twhiston\DrushOptionValidator\VRule;
 
 use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 
@@ -14,7 +14,7 @@ use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
  * Interface Option
  * @package Drupal\twhiston\DrushOptionValidator
  */
-class Rule
+class VRule
 {
 
     private $name;

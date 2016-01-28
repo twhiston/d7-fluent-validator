@@ -7,7 +7,7 @@
  * Time: 18:22
  */
 
-use Drupal\twhiston\DrushOptionValidator\Rule\Rule;
+use Drupal\twhiston\DrushOptionValidator\VRule\VRule;
 use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
 
 class OptionTest extends PHPUnit_Framework_TestCase {
@@ -25,7 +25,7 @@ class OptionTest extends PHPUnit_Framework_TestCase {
       'args' => array(7,11),
     ];
 
-    $option = new Rule('tester',ConstraintFactory::makeConstraints($constraints),666);
+    $option = new VRule('tester',ConstraintFactory::makeConstraints($constraints),666);
 
     $this->assertCount(2,$option->getValidationConstraints());
     $this->assertRegExp('/tester/',$option->getRuleName());
@@ -37,7 +37,7 @@ class OptionTest extends PHPUnit_Framework_TestCase {
     ];
 
     try {
-      $option = new Rule('tester',ConstraintFactory::makeConstraints($constraints),666);
+      $option = new VRule('tester',ConstraintFactory::makeConstraints($constraints),666);
     } catch (Exception $e){
       $this->assertRegExp('/Could not make constraint/',$e->getMessage());
     }

@@ -8,7 +8,7 @@
  */
 
 use Drupal\twhiston\DrushOptionValidator\DrushOptionValidator;
-use Drupal\twhiston\DrushOptionValidator\Rule\Rule;
+use Drupal\twhiston\DrushOptionValidator\VRule\VRule;
 use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
 
 class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
@@ -28,7 +28,7 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
       'args' => array(7,11),
     ];
 
-    $options[] = new Rule('field_1',ConstraintFactory::makeConstraints($constraints));
+    $options[] = new VRule('field_1',ConstraintFactory::makeConstraints($constraints));
 
     $constraints[] = [
       'class' => 'Broken\\Will Not Return',
@@ -36,7 +36,7 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
     ];
 
     try {
-      $options[] = new Rule('field_1',ConstraintFactory::makeConstraints($constraints));
+      $options[] = new VRule('field_1',ConstraintFactory::makeConstraints($constraints));
     } catch(Exception $e){
       $this->assertRegExp('/Could not make constraint/',$e->getMessage());
     }
@@ -53,8 +53,8 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
       ),
     ];
 
-    $options[] = new Rule('field_2',ConstraintFactory::makeConstraints($constraints));
-    $options[] = new Rule('field_3',ConstraintFactory::makeConstraints($constraints),666);
+    $options[] = new VRule('field_2',ConstraintFactory::makeConstraints($constraints));
+    $options[] = new VRule('field_3',ConstraintFactory::makeConstraints($constraints),666);
 
 
     $vali = new DrushOptionValidator($options);

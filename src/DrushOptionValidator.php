@@ -8,7 +8,7 @@
 
 namespace Drupal\twhiston\DrushOptionValidator;
 
-use Drupal\twhiston\DrushOptionValidator\Rule\Rule;
+use Drupal\twhiston\DrushOptionValidator\VRule\VRule;
 
 /**
  * Class DrushOptionSanitizer
@@ -19,7 +19,7 @@ class DrushOptionValidator
 
 
     /**
-     * @var Rule[] $options
+     * @var VRule[] $options
      */
     private $options;
 
@@ -42,9 +42,9 @@ class DrushOptionValidator
     }
 
     /**
-     * @param Rule $option
+     * @param VRule $option
      */
-    public function addOption(Rule $option)
+    public function addOption(VRule $option)
     {
         $this->options[$option->getRuleName()] = $option;
     }
