@@ -11,23 +11,27 @@ namespace Drupal\twhiston\DrushOptionValidator\Constraint;
 
 use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
-class CallableConstraint implements Constraint {
+class CallableConstraint implements Constraint
+{
 
-  private $callable;
+    private $callable;
 
-  public function validate($data) {
-    $call = $this->callable;
-    $output = $call($data);
-    if($output instanceof ValidationResult) {
-      return $output;
-    } elseif(is_bool($output)){
-      return new ValidationResult($output);
+    public function __construct($callable)
+    {
+        $this->callable = $callable;
     }
-    return NULL;
-  }
 
-  public function __construct($callable) {
-    $this->callable = $callable;
-  }
+    public function validate($data)
+    {
+        $call = $this->callable;
+        $output = $call($data);
+        if ($output instanceof ValidationResult) {
+            return $output;
+        } elseif (is_bool($output)) {
+            return new ValidationResult($output);
+        }
+
+        return null;
+    }
 
 }

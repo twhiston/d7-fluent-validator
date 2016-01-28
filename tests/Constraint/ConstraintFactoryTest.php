@@ -16,24 +16,29 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
 
     //Check that it works
     /** @var Constraint $constraint */
-    $constraint = ConstraintFactory::makeConstraint('Numeric\\GreaterThan',array(5));
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Constraint',$constraint);
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraint);
+      $constraint = ConstraintFactory::makeConstraint('Numeric\\GreaterThan',array(5));
+      $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Constraint',$constraint);
+      $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraint);
+      $this->assertTrue($constraint->validate(10)->getState());
 
 
-    $this->assertTrue($constraint->validate(10)->getState());
+    try {
+      //Check that it doesnt
+      $constraint = ConstraintFactory::makeConstraint('Broken\\DoesntExist',array(5));
+    } catch (Exception $e){
+      $this->assertRegExp('/Could not make constraint/',$e->getMessage());
+    }
 
 
-    //Check that it doesnt
-    $constraint = ConstraintFactory::makeConstraint('Broken\\DoesntExist',array(5));
-    $this->assertNull($constraint);
 
-
-    //Check that we can make a Constraint with multiple parameters
-    $constraint = ConstraintFactory::makeConstraint('Numeric\\Between',array(5,10));
-    $this->assertTrue($constraint->validate(7)->getState());
-    $this->assertFalse($constraint->validate(3)->getState());
-    $this->assertFalse($constraint->validate(11)->getState());
+      //Check that we can make a Constraint with multiple parameters
+      $constraint = ConstraintFactory::makeConstraint(
+        'Numeric\\Between',
+        array(5, 10)
+      );
+      $this->assertTrue($constraint->validate(7)->getState());
+      $this->assertFalse($constraint->validate(3)->getState());
+      $this->assertFalse($constraint->validate(11)->getState());
 
 
     //Check that we can make a callable constraint
@@ -66,16 +71,11 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
       'args' => array(),
     ];
 
-    $constraints[] = [
-      'class' => 'Broken\\Will Not Return',
-      'args' => array(7,11),
-    ];
 
     $constraints[] = [
       'class' => 'Numeric\\Between',
       'args' => array(7,11),
     ];
-
 
     /** @var Constraint[] $constraint */
     $constraints = ConstraintFactory::makeConstraints($constraints);
@@ -84,6 +84,20 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
     $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\IsNumeric',$constraints[1]);
     $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between',$constraints[2]);
+
+
+    $constraints[] = [
+      'class' => 'Broken\\Will Not Return',
+      'args' => array(7,11),
+    ];
+
+    try {
+      //Check that it doesnt
+      $constraints = ConstraintFactory::makeConstraints($constraints);
+    } catch (Exception $e){
+      $this->assertRegExp('/Could not make constraint/',$e->getMessage());
+    }
+
 
   }
 

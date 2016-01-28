@@ -11,13 +11,15 @@ namespace Drupal\twhiston\DrushOptionValidator\Constraint\General;
 use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
-class IsBool implements Constraint {
+class IsBool implements Constraint
+{
 
 
-  public function validate($data) {
+    public function validate($data)
+    {
 
-    return new ValidationResult(is_bool($data));
-  }
+        return new ValidationResult(is_bool($data));
+    }
 
 
 }

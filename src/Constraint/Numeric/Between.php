@@ -17,27 +17,33 @@ use Drupal\twhiston\DrushOptionValidator\ValidationResult;
  * Date: 26/01/2016
  * Time: 15:18
  */
-class Between implements Constraint {
+class Between implements Constraint
+{
 
-  private $min;
+    private $min;
 
-  private $max;
+    private $max;
 
-  public function __construct($min,$max) {
-    $this->min = $min;
-    $this->max = $max;
-  }
-
-  public function validate($data) {
-
-    $state = TRUE;
-    if($data < $this->min){
-      $state = FALSE;
-    } else if($data > $this->max){
-      $state = FALSE;
+    public function __construct($min, $max)
+    {
+        $this->min = $min;
+        $this->max = $max;
     }
-    return new ValidationResult($state);
-  }
+
+    public function validate($data)
+    {
+
+        $state = true;
+        if ($data < $this->min) {
+            $state = false;
+        } else {
+            if ($data > $this->max) {
+                $state = false;
+            }
+        }
+
+        return new ValidationResult($state);
+    }
 
 
 }

@@ -11,18 +11,21 @@ use Drupal\twhiston\DrushOptionValidator\ValidationResult;
  * Date: 26/01/2016
  * Time: 15:18
  */
-class LessThan implements Constraint {
+class LessThan implements Constraint
+{
 
-  private $value;
+    private $value;
 
 
-  public function __construct($value) {
-    $this->value = $value;
-  }
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 
-  public function validate($data) {
-    return new ValidationResult(($data < $this->value));
-  }
+    public function validate($data)
+    {
+        return new ValidationResult(($data < $this->value));
+    }
 
 
 }

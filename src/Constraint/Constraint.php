@@ -13,12 +13,13 @@ namespace Drupal\twhiston\DrushOptionValidator\Constraint;
  * Interface Constraint
  * @package Drupal\twhiston\DrushOptionSanitizer
  */
-interface Constraint {
+interface Constraint
+{
 
-  /**
-   * @param $data
-   * @return ValidationResult
-   */
-  public function validate($data);
+    /**
+     * @param $data
+     * @return ValidationResult
+     */
+    public function validate($data);
 
 }

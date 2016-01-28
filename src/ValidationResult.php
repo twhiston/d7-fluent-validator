@@ -9,32 +9,34 @@
 namespace Drupal\twhiston\DrushOptionValidator;
 
 
-class ValidationResult {
+class ValidationResult
+{
 
-  private $state;
+    private $state;
 
-  private $message;
+    private $message;
 
-  public function __construct($state, $message = NULL) {
-    $this->state = $state;
-    $this->message = $message;
-  }
+    public function __construct($state, $message = null)
+    {
+        $this->state = $state;
+        $this->message = $message;
+    }
 
-  /**
-   * @return mixed
-   */
-  public function getState() {
-    return $this->state;
-  }
+    /**
+     * @return mixed
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
 
-  /**
-   * @return mixed
-   */
-  public function getMessage() {
-    return $this->message;
-  }
-
-
+    /**
+     * @return mixed
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 
 
 }

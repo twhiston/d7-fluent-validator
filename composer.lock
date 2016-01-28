@@ -1,0 +1,37 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "a87dd6615b5b1e7eb17a10956b293452",
+    "content-hash": "e61a78c1a0db478a780284ec403b577f",
+    "packages": [
+        {
+            "name": "twhiston/twLib",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://twhiston@bitbucket.org/twhiston/twlib.git",
+                "reference": "ad8631945fee1618fbdb1d585c3d9233b99fc804"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "twhiston\\twLib\\": "src"
+                }
+            },
+            "time": "2016-01-27 22:59:31"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "twhiston/twlib": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

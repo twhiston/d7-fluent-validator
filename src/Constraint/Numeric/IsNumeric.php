@@ -16,11 +16,13 @@ use Drupal\twhiston\DrushOptionValidator\ValidationResult;
  * Date: 26/01/2016
  * Time: 15:18
  */
-class IsNumeric implements Constraint {
+class IsNumeric implements Constraint
+{
 
 
-  public function validate($data) {
-    return new ValidationResult((is_numeric($data)));
-  }
+    public function validate($data)
+    {
+        return new ValidationResult((is_numeric($data)));
+    }
 
 }

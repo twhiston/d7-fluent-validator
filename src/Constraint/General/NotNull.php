@@ -12,11 +12,13 @@ namespace Drupal\twhiston\DrushOptionValidator\Constraint\General;
 use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 use Drupal\twhiston\DrushOptionValidator\ValidationResult;
 
-class NotNull implements Constraint {
+class NotNull implements Constraint
+{
 
 
-  public function validate($data) {
-    return new ValidationResult($data !== NULL);
-  }
+    public function validate($data)
+    {
+        return new ValidationResult($data !== null);
+    }
 
 }

@@ -1,5 +1,21 @@
 {
   "name": "Drupal/twhiston/DrushOptionValidator",
+  "description": "Simple Option Validator",
+  "authors": [
+    {
+      "name": "Tom Whiston",
+      "email": "tom.whiston@gmail.com"
+    }
+  ],
+  "require": {
+    "twhiston/twLib": "dev-master"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url":  "https://twhiston@bitbucket.org/twhiston/twlib.git"
+    }
+  ],
   "autoload": {
     "psr-4" : {
       "Drupal\\twhiston\\DrushOptionValidator\\" : "src"
