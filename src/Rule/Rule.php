@@ -6,7 +6,7 @@
  * Time: 14:21
  */
 
-namespace Drupal\twhiston\DrushOptionValidator\Option;
+namespace Drupal\twhiston\DrushOptionValidator\Rule;
 
 use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
 
@@ -14,7 +14,7 @@ use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
  * Interface Option
  * @package Drupal\twhiston\DrushOptionValidator
  */
-class Option
+class Rule
 {
 
     private $name;
@@ -37,7 +37,7 @@ class Option
     /**
      * @return string
      */
-    public function getOptionName()
+    public function getRuleName()
     {
         return $this->name;
     }

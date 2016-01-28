@@ -8,7 +8,7 @@
 
 namespace Drupal\twhiston\DrushOptionValidator;
 
-use Drupal\twhiston\DrushOptionValidator\Option\Option;
+use Drupal\twhiston\DrushOptionValidator\Rule\Rule;
 
 /**
  * Class DrushOptionSanitizer
@@ -19,7 +19,7 @@ class DrushOptionValidator
 
 
     /**
-     * @var Option[] $options
+     * @var Rule[] $options
      */
     private $options;
 
@@ -42,11 +42,11 @@ class DrushOptionValidator
     }
 
     /**
-     * @param Option $option
+     * @param Rule $option
      */
-    public function addOption(Option $option)
+    public function addOption(Rule $option)
     {
-        $this->options[$option->getOptionName()] = $option;
+        $this->options[$option->getRuleName()] = $option;
     }
 
     /**
@@ -59,18 +59,18 @@ class DrushOptionValidator
         $state = true;
         $this->results = [];
         foreach ($this->options as $option) {
-            if (array_key_exists($option->getOptionName(), $data)) {
+            if (array_key_exists($option->getRuleName(), $data)) {
                 $constraints = $option->getValidationConstraints();
                 foreach ($constraints as $constraint) {
                     /** @var ValidationResult $result */
                     $result = $constraint->validate(
-                      $data[$option->getOptionName()]
+                      $data[$option->getRuleName()]
                     );
                     $this->results[] = $result;
                     if (!$result->getState()) {
                         $state = false;
                         if ($this->defaultOnFail) {
-                            $data[$option->getOptionName(
+                            $data[$option->getRuleName(
                             )] = $option->getDefaultValue();
                         }
                     }
