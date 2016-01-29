@@ -31,7 +31,6 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $data = [
             'anum' => 25,
             'field1' => $f1in,
-            'field2' => $lin
         ];
 
         //Some things we call may need some additional info from us.
@@ -58,23 +57,39 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           new LessThan(29)
         );
 
+        $vali = new FluentValidator();
+        $result = $vali->addVRule($r)->addVRule($r2)->validate($data);
+        $this->assertTrue($result);
+
+        $mes = $vali->getMessages();
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][1]);
+
+        $res = $vali->getResults();
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][0]);
+        $this->assertTrue($res['field1'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][1]);
+        $this->assertTrue($res['field1'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][0]);
+        $this->assertTrue($res['anum'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][1]);
+        $this->assertTrue($res['anum'][1]->getStatus());
+
         $r3 = new VRule('lambda');
         $r3->addConstraint(
           new CallableConstraint(
-              function($a,$b,$c){
-                  //Real exciting!
-                  if($a > $c && $a < $b){
-                      return TRUE;
-                  }
-                  return FALSE;
-              },
-                [12,2]//$b and $c
+            function($a,$b,$c){
+                //Real exciting!
+                if($a > $c && $a < $b){
+                    return TRUE;
+                }
+                return FALSE;
+            },
+            [12,2]//$b and $c
           )
         );
-
-        $vali = new FluentValidator();
-        $result = $vali->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
-        $this->assertTrue($result);
 
         $data = [
           'anum' => 30, //fails
@@ -84,6 +99,26 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);//you can pass a new set of options to reset, or pass nothing to keep existing
         $this->assertFalse($result);
+
+        $mes = $vali->getMessages();
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][0]);
+        $this->assertRegExp('/Validation Failed/',$mes['anum'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['lambda'][0]);
+
+        $res = $vali->getResults();
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][0]);
+        $this->assertTrue($res['field1'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][1]);
+        $this->assertTrue($res['field1'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][0]);
+        $this->assertTrue($res['anum'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][1]);
+        $this->assertFalse($res['anum'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['lambda'][0]);
+        $this->assertTrue($res['lambda'][0]->getStatus());
+
 
         $data = [
           'anum' => 25,
@@ -107,7 +142,24 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $result = $vali->reset()->addVRule($r4)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
 
+        $mes = $vali->getMessages();
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][0]);
+        $this->assertRegExp('/Validation Failed/',$mes['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['lambda'][0]);
 
+        $res = $vali->getResults();
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][0]);
+        $this->assertTrue($res['field1'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][1]);
+        $this->assertFalse($res['field1'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][0]);
+        $this->assertTrue($res['anum'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][1]);
+        $this->assertTrue($res['anum'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['lambda'][0]);
+        $this->assertTrue($res['lambda'][0]->getStatus());
 
         $data = [
           'anum' => 25,
@@ -131,8 +183,25 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r5)->validate($data);
         $this->assertFalse($result);
-        $rs = $vali->getMessages();
-        $this->assertRegExp('/Validation Failed/',$rs['lambda'][0]);
+
+        $mes = $vali->getMessages();
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['anum'][1]);
+        $this->assertRegExp('/Validation Failed/',$mes['lambda'][0]);
+
+        $res = $vali->getResults();
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][0]);
+        $this->assertTrue($res['field1'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['field1'][1]);
+        $this->assertTrue($res['field1'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][0]);
+        $this->assertTrue($res['anum'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['anum'][1]);
+        $this->assertTrue($res['anum'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['lambda'][0]);
+        $this->assertFalse($res['lambda'][0]->getStatus());
 
     }
 

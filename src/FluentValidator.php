@@ -54,7 +54,6 @@ class FluentValidator implements LoggerAwareInterface
         $this->rules = [];
         $this->results = [];
         $this->setOptions($options);
-
     }
 
     /**
@@ -153,7 +152,6 @@ class FluentValidator implements LoggerAwareInterface
                         if($this->validateConstraint($branch,$data,$name,$results[$name]) == FALSE){
                             $state = FALSE;
                         }
-
                     } else if(  is_subclass_of($branch,'Drupal\\twhiston\\FluentValidator\\VRule\\VRule') ||
                                 $branch instanceof VRule === TRUE ){
                         //If its a rule we recursively call this function with the right data
@@ -176,9 +174,8 @@ class FluentValidator implements LoggerAwareInterface
         );
         $results[] = $result;//set the result
         if (!$result->getStatus()) {
-            //If the validation failed
+            //If the validation failed do some logging
             if(array_key_exists('LogLevel',$this->options) && $this->options['LogLevel'] == 'debug'){
-                //Do some logging
                 $this->logger->notice('@rule validation failed',array('@rule' => $name));
             }
         } else {
