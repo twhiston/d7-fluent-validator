@@ -17,9 +17,9 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     //Check that it works
     /** @var Constraint $constraint */
       $constraint = ConstraintFactory::makeConstraint('Numeric\\GreaterThan',array(5));
-      $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Constraint',$constraint);
-      $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraint);
-      $this->assertTrue($constraint->validate(10)->getState());
+      $this->assertInstanceOf('Drupal\twhiston\FluentValidator\Constraint\Constraint',$constraint);
+      $this->assertInstanceOf('Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan',$constraint);
+      $this->assertTrue($constraint->validate(10)->getStatus());
 
 
     try {
@@ -36,9 +36,9 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
         'Numeric\\Between',
         array(5, 10)
       );
-      $this->assertTrue($constraint->validate(7)->getState());
-      $this->assertFalse($constraint->validate(3)->getState());
-      $this->assertFalse($constraint->validate(11)->getState());
+      $this->assertTrue($constraint->validate(7)->getStatus());
+      $this->assertFalse($constraint->validate(3)->getStatus());
+      $this->assertFalse($constraint->validate(11)->getStatus());
 
 
     //Check that we can make a callable constraint
@@ -51,9 +51,9 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
       }
     ];
 
-    $constraint = ConstraintFactory::makeConstraint('Drupal\twhiston\DrushOptionValidator\Constraint\CallableConstraint',$data);
-    $this->assertTrue($constraint->validate('I Work')->getState());
-    $this->assertFalse($constraint->validate('I suck')->getState());
+    $constraint = ConstraintFactory::makeConstraint('Drupal\twhiston\FluentValidator\Constraint\CallableConstraint',$data);
+    $this->assertTrue($constraint->validate('I Work')->getStatus());
+    $this->assertFalse($constraint->validate('I suck')->getStatus());
 
   }
 
@@ -75,8 +75,8 @@ class ConstraintFactoryTest extends PHPUnit_Framework_TestCase {
     $constraints = ConstraintFactory::makeConstraints($constraints);
 
     $this->assertCount(2,$constraints);
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
-    $this->assertInstanceOf('Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between',$constraints[1]);
+    $this->assertInstanceOf('Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan',$constraints[0]);
+    $this->assertInstanceOf('Drupal\twhiston\FluentValidator\Constraint\Numeric\Between',$constraints[1]);
 
 
     $constraints[] = [

@@ -26,8 +26,8 @@ class VRule
 
     private $name;
 
-    /** @var  Constraint */
-    private $constraints;
+    /** @var  Constraint|VRule[] */
+    private $tree;
 
     private $default;
 
@@ -44,19 +44,24 @@ class VRule
     }
 
     public function addConstraint(Constraint $constraint){
-        $this->constraints[] = $constraint;
+        $this->tree[] = $constraint;
         return $this;
     }
 
-    public function addConstraints($constraints){
-        $constraints = (!is_array($constraints)) ? array($constraints) : $constraints;
-        $this->constraints = array_merge($constraints, $this->constraints);
+    public function addRule(VRule $rule){
+        $this->tree[] = $rule;
         return $this;
     }
 
-    public function setConstraints($constraints){
-        $constraints = (!is_array($constraints)) ? array($constraints) : $constraints;
-        $this->constraints = array_merge($constraints, $this->constraints);
+    public function addTree($tree){
+        $tree = (!is_array($tree)) ? array($tree) : $tree;
+        $this->tree = (is_array($this->tree))? array_merge($tree, $this->tree) : $tree;
+        return $this;
+    }
+
+    public function setTree($tree){
+        $tree = (!is_array($tree)) ? array($tree) : $tree;
+        $this->tree = $tree;
         return $this;
     }
 
@@ -79,11 +84,11 @@ class VRule
     /**
      * Should return an array of callables/closures, which return TRUE or FALSE
      * Try using the Constraints factory to make this
-     * @return Constraint[]
+     * @return Constraint|VRule[]
      */
-    public function getConstraints()
+    public function getTree()
     {
-        return $this->constraints;
+        return $this->tree;
     }
 
 }

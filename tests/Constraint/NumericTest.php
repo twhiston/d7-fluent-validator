@@ -23,25 +23,25 @@ class NumericTest extends PHPUnit_Framework_TestCase {
     $t = new Between(12, 1456);
 
     $r = $t->validate(11);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(12);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(13);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(1455);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(1456);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(1457);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(24521);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
   }
 
@@ -50,16 +50,16 @@ class NumericTest extends PHPUnit_Framework_TestCase {
     $t = new GreaterThan(23);
 
     $r = $t->validate(11);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(23);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(24);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(1500);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
   }
 
@@ -68,16 +68,16 @@ class NumericTest extends PHPUnit_Framework_TestCase {
     $t = new GreaterThanEquals(23);
 
     $r = $t->validate(11);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(23);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(24);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(1500);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
   }
 
@@ -86,22 +86,22 @@ class NumericTest extends PHPUnit_Framework_TestCase {
     $t = new LessThan(23);
 
     $r = $t->validate(1);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(11);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(23);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(24);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(1500);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(-11);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
   }
 
@@ -110,22 +110,22 @@ class NumericTest extends PHPUnit_Framework_TestCase {
     $t = new LessThanEquals(23);
 
     $r = $t->validate(1);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(11);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(23);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
     $r = $t->validate(24);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(1500);
-    $this->assertFalse($r->getState());
+    $this->assertFalse($r->getStatus());
 
     $r = $t->validate(-11);
-    $this->assertTrue($r->getState());
+    $this->assertTrue($r->getStatus());
 
   }
 

@@ -40,8 +40,8 @@ class ConstraintFactory
         $output = Instantiate::make(
           $class,
           $args,
-          "Drupal\\twhiston\\DrushOptionValidator\\Constraint\\",
-          'Drupal\twhiston\DrushOptionValidator\Constraint\Constraint'
+          "Drupal\\twhiston\\FluentValidator\\Constraint\\",
+          'Drupal\twhiston\FluentValidator\Constraint\Constraint'
         );
         if ($output != null) {
             return $output;

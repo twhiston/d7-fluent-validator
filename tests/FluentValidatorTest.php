@@ -10,13 +10,13 @@
 use Drupal\twhiston\FluentValidator\FluentValidator;
 use Drupal\twhiston\FluentValidator\VRule\VRule;
 use Drupal\twhiston\FluentValidator\Constraint\CallableConstraint;
+use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan;
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\LessThan;
 
 /**
  * Class FluentValidatorTest
- * @group new
  */
 class FluentValidatorTest extends PHPUnit_Framework_TestCase
 {
@@ -29,10 +29,11 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $data = [
           'anum' => 25, // If your function call has a single input parameter pass it like this
-          'field1' => ['args' => [$f1in, 'correct'] ],//if your function call takes multiple parameters you need to wrap them in ['args'=>[]]
-          'lambda' => ['args' => [$lin,12,2]]//This might prove an issue if your callable only needs an array with a key called args,
-                                             // but you could always wrap it in something else and unwrap it in your callback
-                                             //  as far as i know no php native function needs an 'args' key in an array
+          'field1' => ['args' => [$f1in, 'correct'] ],//if a CallableConstraint function call takes multiple parameters you need to wrap them in ['args'=>[]]
+          'lambda' => ['args' => [$lin,12,2]]//This might prove an issue if your CallableConstraint only needs an array with a key called args,
+                                             //but you could always wrap it in something else and unwrap it in your callback
+                                             //as far as i know no php native function needs an 'args' key in an array
+                                             // wrapping input parameters in args is only required for callable constraints, you can do what you like in your own Constraint classes
         ];
 
         //Make some rules
@@ -90,6 +91,34 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
 
+        //If you want your Callable to send a message that you can pick up in $vali->getMessages() or ->GetResults return a Validation Result
+        $r3 = new VRule('lambda','you suck');
+        $r3->addConstraint(
+          new CallableConstraint(
+            function($a,$b,$c){
+                //Real exciting!
+                if($a > $c && $a < $b){
+                    return new ValidationResult(TRUE,'worked');
+                }
+                return new ValidationResult(FALSE,'failed');
+            }
+          )
+        );
+
+        $data = [
+          'anum' => 25,
+          'field1' => ['args' => [$f1in, 'incorrect'] ],//fails
+          'lambda' => ['args' => [$lin,12,2]]
+        ];
+
+        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
+        $this->assertFalse($result);
+        $ms = $vali->getMessages();
+        foreach($ms as $m){
+            $this->assertRegExp('/worked/',$m);
+        }
+
+
         $data = [
           'anum' => 25,
           'field1' => ['args' => [$f1in, 'incorrect'] ],
@@ -99,6 +128,10 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
+        $rs = $vali->getMessages();
+        foreach($rs as $r){
+            $this->assertRegExp('/failed/',$r);
+        }
 
 
     }
@@ -109,18 +142,63 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $data = [
           'wrapped' => [
-            'field1' => ['args' => 'input', 'incorrect'],
-            'field2' => ['args' => 25, 26]
-          ]
+            'field1' => [ 'args' => ['input', 'input'] ],
+            'field2' => 15
+          ],
+          'lambda' => ['args' => [5,12,2]]
         ];
 
         //to pass nested arrays like this we can use a rule in a constraint
-        $r3 = new VRule('wrapped');//we do not pass a default as each rule can deal with its own fields defaults
+        $r = new VRule('wrapped');//we do not pass a default as each rule can deal with its own fields defaults
+
+        //These are our sub rules
+        $r1 = new VRule('field1','default');//rule name matches the field name in our data
+        $r1->addConstraint(
+          new CallableConstraint('is_string')
+        ) ->addConstraint(
+          new CallableConstraint('strcmp' , [ 0 => TRUE ] )
+        );
+
+        $r2 = new VRule('field2',23);
+        $r2->addConstraint(
+          new GreaterThan(10)
+        )->addConstraint(
+          new LessThan(29)
+        );
+
+        //Add our sub rules to our main rule
+        $r->addRule($r1)->addRule($r2);
+
+        //Create a standard rule at the same level as 'wrapped' field
+        $r3 = new VRule('lambda','you suck');
+        $r3->addConstraint(
+          new CallableConstraint(
+            function($a,$b,$c){
+                //Real exciting!
+                if($a > $c && $a < $b){
+                    return new ValidationResult(TRUE,'worked');
+                }
+                return new ValidationResult(FALSE,'failed');
+            }
+          )
+        );
+
+        $vali = new FluentValidator();
+        $result = $vali->addVRule($r)->addVRule($r3)->validate($data);//Add our wrapped rules and our normal rule
+        $this->assertTrue($result);
 
 
+        $data = [
+          'wrapped' => [
+            'field1' => [ 'args' => ['input', 'incorrect'] ],
+            'field2' => 15
+          ]
+        ];
 
-        //we can also parse this data in another way, by using a different notation in our VRule
-        //use a namespace like formatting to apply it to nested data elements in your rule name
+        $result = $vali->clearResults()->validate($data);
+        $this->assertFalse($result);
+
+        //Now lets validate something stupid complicated and nested.
 
 
     }

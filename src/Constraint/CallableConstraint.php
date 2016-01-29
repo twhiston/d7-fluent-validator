@@ -30,25 +30,24 @@ class CallableConstraint implements Constraint
         $fct = new \ReflectionFunction($call);
         $nargs =  $fct->getNumberOfRequiredParameters();
 
-        //If the function only has one we can just pass it the single data variable
+        //If the function only has one argument or it is an array without an args key
+        //we can just pass it the single data variable
         $output = NULL;
-        if($nargs === 1 && !is_array($data)) {
-            $output = $call($data);
-        } elseif($nargs === 1 && is_array($data) && !array_key_exists('args',$data)){
-            //one input but its an array, if it doesnt contain an args key we can assume that our function wants an array
+        if( ( $nargs === 1 && !is_array($data) ) ||
+            ( $nargs === 1 && is_array($data) && !array_key_exists('args',$data) )
+        ) {
             $output = $call($data);
         } elseif(array_key_exists('args', $data)) {
-
+            //if not then we need to make sure the data has the right number of arguments
             $args = array_slice($data['args'], 0, $nargs);
-            $output = call_user_func_array($call,$args);
+            $output = call_user_func_array($call,$args);//call it
         }
-//        else if(is_array($data) && array_key_exists('args',$data)){
-//            $output = call_user_func_array($call,$data['args']);
-//        }
 
         if ($output instanceof ValidationResult) {
+            //If our callable returned a result directly we can return it
             return $output;
         } else {
+            //If it didnt return a result we need to process the result
             //Do output mapping if necessary
             if($this->outputMap != NULL){
                 //If the array key exists set it to this
