@@ -42,7 +42,7 @@ class Between implements Constraint
             }
         }
 
-        return new ValidationResult($state);
+        return new ValidationResult($state, ($state) ? 'Validation Passed':'Validation Failed');
     }
 
 

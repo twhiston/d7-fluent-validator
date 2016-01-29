@@ -114,14 +114,18 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
         $ms = $vali->getMessages();
-        foreach($ms as $m){
-            $this->assertRegExp('/worked/',$m);
-        }
+
+        $this->assertRegExp('/Validation Passed/',$ms['field1'][0]);
+        $this->assertRegExp('/Validation Failed/',$ms['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$ms['anum'][0]);
+        $this->assertRegExp('/Validation Passed/',$ms['anum'][1]);
+        $this->assertRegExp('/worked/',$ms['lambda'][0]);
+
 
 
         $data = [
           'anum' => 25,
-          'field1' => ['args' => [$f1in, 'incorrect'] ],
+          'field1' => ['args' => [$f1in, 'correct'] ],
           'lambda' => ['args' => [$lin,3,2]]//fails
         ];
 
@@ -129,9 +133,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
         $rs = $vali->getMessages();
-        foreach($rs as $r){
-            $this->assertRegExp('/failed/',$r);
-        }
+        $this->assertRegExp('/failed/',$rs['lambda'][0]);
 
 
     }
@@ -195,8 +197,12 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           ]
         ];
 
-        $result = $vali->clearResults()->validate($data);
+        $result = $vali->reset()->addVRule($r)->validate($data);
         $this->assertFalse($result);
+
+        $mes = $vali->getMessages();
+        $res = $vali->getResults();
+
 
         //Now lets validate something stupid complicated and nested.
 

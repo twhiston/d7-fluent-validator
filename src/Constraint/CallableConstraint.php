@@ -58,7 +58,7 @@ class CallableConstraint implements Constraint
                     $output = FALSE;
                 }
             }
-            return new ValidationResult((bool)$output);
+            return new ValidationResult((bool)$output, ((bool)$output)? 'Validation Passed':'Validation Failed');
         }
     }
 

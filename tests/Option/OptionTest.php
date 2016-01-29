@@ -42,7 +42,6 @@ class OptionTest extends PHPUnit_Framework_TestCase {
     } catch (Exception $e){
       $this->assertRegExp('/Could not make constraint/',$e->getMessage());
     }
-
   }
 
 }

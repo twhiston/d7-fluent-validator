@@ -121,8 +121,9 @@ class FluentValidator implements LoggerAwareInterface
 
     public function validate(&$data){
         //start the validation chain
-        return $this->doValidate($data,$this->rules);
-
+        $this->results = [];
+        $state = TRUE;//Innocent until proven guilty
+        return $this->doValidate($data,$this->rules,$state,$this->results);
     }
 
     /**
@@ -133,54 +134,46 @@ class FluentValidator implements LoggerAwareInterface
      * @param null|[] $extra
      * @return bool
      */
-    public function doValidate(&$data, $rules)
+    private function doValidate(&$data, $rules, &$state, &$results)
     {
 
-        //How do we do this in a smarter way, we need to recursively validate any arrays
-        //We also need to be able to search out depth in arrays from namespace style rule names
-
-        //Firstly find all the arrays in the data and
-
-        $success = TRUE;//Innocent until proven guilty
-        $states = [];
-        $this->results = [];
         /** @var VRule $rule */
         if(!is_array($rules)){
             $rules = array($rules);
         }
         foreach ($rules as $rule) {
             $name = $rule->getName();
-            $states[$name] = [];
+            $results[$name] = [];
             if (array_key_exists($name, $data)) {
                 $branches = $rule->getTree();
+                /** @var Constraint|VRule $branch */
                 foreach ($branches as $branch) {
                     //are we a rule or a constraint
                     if(in_array('Drupal\\twhiston\\FluentValidator\\Constraint\\Constraint', class_implements($branch,true))){
-                        if($this->validateConstraint($branch,$data,$name,$rule->getDefault()) == FALSE){
-                            $success = FALSE;
+                        if($this->validateConstraint($branch,$data,$name,$rule->getDefault(),$results[$name]) == FALSE){
+                            $state = FALSE;
                         }
-
                     } else if(  is_subclass_of($branch,'Drupal\\twhiston\\FluentValidator\\VRule\\VRule') ||
                                 $branch instanceof VRule === TRUE ){
-                        if($this->doValidate($data[$name],$branch) == FALSE){
-                            $success = FALSE;
+                        //If its a rule we recursively call this function with the right data
+                        if($this->doValidate($data[$name],$branch,$state,$results[$name]) == FALSE){
+                            $state = FALSE;
                         }
                     }
-
                 }
             }
         }
-        return $success;
+        return $state;
     }
 
-    public function validateConstraint(Constraint $constraint, $data, $name, $def){
+    public function validateConstraint(Constraint $constraint, $data, $name, $def, &$results){
 
         $state = FALSE;
         /** @var ValidationResult $result */
         $result = $constraint->validate(
           $data[$name]
         );
-        $this->results[] = $result;//set the result
+        $results[] = $result;//set the result
         if (!$result->getStatus()) {
             //If the validation failed
             if(array_key_exists('LogLevel',$this->options) && $this->options['LogLevel'] == 'debug'){
@@ -208,11 +201,43 @@ class FluentValidator implements LoggerAwareInterface
      */
     public function getMessages(){
         $out = [];
-        /** @var ValidationResult $result */
-        foreach($this->results as $result){
-            $m = $result->getMessage();
-            if($m !== NULL){
-                $out[] = $m;
+        return $this->doGetMessages($this->results,$out);
+    }
+
+    /**
+     * Re-entrant function
+     * Not beautiful but it gets the job done
+     * @return array
+     */
+    private function doGetMessages($results,&$out){
+
+        foreach($results as $rule => $constraints){
+            $isAr = FALSE;
+            /** @var ValidationResult $result */
+            if(is_array($constraints)){
+                //If its an array we need to make an entry for it
+                $out[$rule] = [];
+                $isAr = TRUE;//We made an array, we need to know this later
+            } else {
+                //Wrap non arrays to make the next bit play nice
+                $constraints = array($constraints);
+            }
+            foreach ($constraints as $name => $result) {
+                if(is_array($result)){
+                    //If the result is an array we need to drill down into it again
+                    $out[$rule][$name] = [];
+                    $this->doGetMessages($result,$out[$rule][$name]);
+                } else {
+                    $mes = $result->getMessage();
+                    if($mes !== NULL){
+                        //This is kind of horrible, but to make it work and everything end up named properly it has to do this
+                        if($isAr){
+                            $out[$rule][] = $result->getMessage();
+                        } else {
+                            $out[] = $result->getMessage();
+                        }
+                    }
+                }
             }
         }
         return $out;

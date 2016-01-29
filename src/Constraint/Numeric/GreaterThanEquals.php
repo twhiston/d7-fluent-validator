@@ -23,7 +23,9 @@ class GreaterThanEquals implements Constraint
 
     public function validate($data)
     {
-        return new ValidationResult(($data >= $this->value));
+        $state = ($data >= $this->value);
+        return new ValidationResult($state, ($state) ? 'Validation Passed':'Validation Failed');
+
     }
 
 }
