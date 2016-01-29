@@ -57,8 +57,9 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           new LessThan(29)
         );
 
+        $options['loglevel'] = 'debug';//PSR-3 log level please
         $vali = new FluentValidator();
-        $result = $vali->addVRule($r)->addVRule($r2)->validate($data);
+        $result = $vali->setOptions($options)->addVRule($r)->addVRule($r2)->validate($data);
         $this->assertTrue($result);
 
         $mes = $vali->getMessages();
@@ -97,7 +98,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           'lambda' => $lin
         ];
 
-        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);//you can pass a new set of options to reset, or pass nothing to keep existing
+        $result = $vali->reset($options)->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);//you can pass a new set of options to reset, or pass nothing to keep existing
         $this->assertFalse($result);
 
         $mes = $vali->getMessages();
@@ -181,7 +182,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           )
         );
 
-        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r5)->validate($data);
+        $result = $vali->reset()->setOptions($options)->addVRule($r)->addVRule($r2)->addVRule($r5)->validate($data);
         $this->assertFalse($result);
 
         $mes = $vali->getMessages();
@@ -222,11 +223,13 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         //These are our sub rules
         $r1 = new VRule('field1');//rule name matches the field name in our data
-        $r1->addConstraint(
-          new CallableConstraint('is_string')
-        ) ->addConstraint(
+
+        $a = [
+          new CallableConstraint('is_string'),
           new CallableConstraint('strcmp' , ['input'], [ 0 => TRUE ] )
-        );
+        ];
+
+        $r1->setTree($a);
 
         $r2 = new VRule('field2');
         $r2->addConstraint(

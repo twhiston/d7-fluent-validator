@@ -34,7 +34,8 @@ class CallableConstraintTest extends PHPUnit_Framework_TestCase
             ["test" => "data"],//array_key_exists needs an array as its second parameter
         ];
 
-        $c = new CallableConstraint('array_key_exists',$a);
+        $c = new CallableConstraint('array_key_exists');
+        $c->setArgs($a);
         $r = $c->validate('test');
         $this->assertTrue($r->getStatus());
 

@@ -8,12 +8,11 @@
 
 namespace Drupal\twhiston\FluentValidator;
 
-use Drupal\twhiston\FluentValidator\VRule\NoDefault;
-use Drupal\twhiston\FluentValidator\VRule\VRule;
+use Drupal\twhiston\FluentValidator\Constraint\Constraint;
 use Drupal\twhiston\FluentValidator\Result\ValidationResult;
+use Drupal\twhiston\FluentValidator\VRule\VRule;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Drupal\twhiston\FluentValidator\Constraint\Constraint;
 
 /**
  * Class DrushOptionSanitizer
@@ -28,7 +27,7 @@ class FluentValidator implements LoggerAwareInterface
      */
     private $rules;
 
-    /** @var ValidationResult[]  */
+    /** @var ValidationResult[] */
     private $results;
 
     /** @var  LoggerInterface */
@@ -50,7 +49,8 @@ class FluentValidator implements LoggerAwareInterface
      */
     public function __construct($options = NULL)
     {
-        $this->state = null;
+        $this->state = NULL;
+        $this->logger = NULL;
         $this->rules = [];
         $this->results = [];
         $this->setOptions($options);
@@ -60,13 +60,15 @@ class FluentValidator implements LoggerAwareInterface
      * @param $options
      * @return $this
      */
-    public function setOptions($options){
+    public function setOptions($options)
+    {
         $this->options = [];
-        //        if (is_array($options)) {
-        //            foreach ($options as $option) {
-//                $this->addOption($option);
-//            }
-//        }
+        if (is_array($options)) {
+            foreach ($options as $name => $option) {
+                $this->options[$name] = $option;
+            }
+        }
+
         return $this;
     }
 
@@ -77,6 +79,7 @@ class FluentValidator implements LoggerAwareInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+
         return $this;
     }
 
@@ -84,20 +87,24 @@ class FluentValidator implements LoggerAwareInterface
      * @param null $options
      * @return $this
      */
-    public function reset($options = NULL){
+    public function reset($options = null)
+    {
         $this->clearResults();
 
         $this->rules = [];
 
-        if($options !== NULL){
+        if ($options !== null) {
             $this->setOptions($options);
         }
+
         return $this;
     }
 
-    public function clearResults(){
+    public function clearResults()
+    {
         $this->state = null;
         $this->results = [];
+
         return $this;
     }
 
@@ -108,21 +115,26 @@ class FluentValidator implements LoggerAwareInterface
     public function addVRule(VRule $option)
     {
         $this->rules[$option->getName()] = $option;
+
         return $this;
     }
 
     /**
      * @param $option VRule[]
      */
-    public function addVRules($rules){
-        $this->rules = array_merge($rules,$this->rules);
+    public function addVRules($rules)
+    {
+        $this->rules = array_merge($rules, $this->rules);
+
+        return $this;
     }
 
-    public function validate(&$data){
+    public function validate(&$data)
+    {
         //start the validation chain
         $this->results = [];
-        $state = TRUE;//Innocent until proven guilty TODO NO!!!
-        return $this->doValidate($data,$this->rules,$state,$this->results);
+        $state = true;//Innocent until proven guilty TODO NO!!!
+        return $this->doValidate($data, $this->rules, $state, $this->results);
     }
 
     /**
@@ -137,7 +149,7 @@ class FluentValidator implements LoggerAwareInterface
     {
 
         /** @var VRule $rule */
-        if(!is_array($rules)){
+        if (!is_array($rules)) {
             $rules = array($rules);
         }
         foreach ($rules as $rule) {
@@ -148,26 +160,53 @@ class FluentValidator implements LoggerAwareInterface
                 /** @var Constraint|VRule $branch */
                 foreach ($branches as $branch) {
                     //are we a rule or a constraint
-                    if(in_array('Drupal\\twhiston\\FluentValidator\\Constraint\\Constraint', class_implements($branch,true))){
-                        if($this->validateConstraint($branch,$data,$name,$results[$name]) == FALSE){
-                            $state = FALSE;
+                    if (in_array(
+                      'Drupal\\twhiston\\FluentValidator\\Constraint\\Constraint',
+                      class_implements($branch, true)
+                    )) {
+                        if ($this->validateConstraint(
+                            $branch,
+                            $data,
+                            $name,
+                            $results[$name]
+                          ) == false
+                        ) {
+                            $state = false;
                         }
-                    } else if(  is_subclass_of($branch,'Drupal\\twhiston\\FluentValidator\\VRule\\VRule') ||
-                                $branch instanceof VRule === TRUE ){
-                        //If its a rule we recursively call this function with the right data
-                        if($this->doValidate($data[$name],$branch,$state,$results[$name]) == FALSE){
-                            $state = FALSE;
+                    } else {
+                        if (is_subclass_of(
+                            $branch,
+                            'Drupal\\twhiston\\FluentValidator\\VRule\\VRule'
+                          ) ||
+                          $branch instanceof VRule === true
+                        ) {
+                            //If its a rule we recursively call this function with the right data
+                            if ($this->doValidate(
+                                $data[$name],
+                                $branch,
+                                $state,
+                                $results[$name]
+                              ) == false
+                            ) {
+                                $state = false;
+                            }
                         }
                     }
                 }
             }
         }
+
         return $state;
     }
 
-    private function validateConstraint(Constraint $constraint, &$data, $name, &$results){
+    private function validateConstraint(
+      Constraint $constraint,
+      &$data,
+      $name,
+      &$results
+    ) {
 
-        $state = FALSE;
+        $state = false;
         /** @var ValidationResult $result */
         $result = $constraint->validate(
           $data[$name]
@@ -175,12 +214,22 @@ class FluentValidator implements LoggerAwareInterface
         $results[] = $result;//set the result
         if (!$result->getStatus()) {
             //If the validation failed do some logging
-            if(array_key_exists('LogLevel',$this->options) && $this->options['LogLevel'] == 'debug'){
-                $this->logger->notice('@rule validation failed',array('@rule' => $name));
+            if (array_key_exists(
+                'loglevel',
+                $this->options
+              ) && $this->options['loglevel'] == 'debug'
+            ) {
+                if($this->logger !== NULL) {
+                    $this->logger->notice(
+                      '@rule validation failed',
+                      array('@rule' => $name)
+                    );
+                }
             }
         } else {
-            $state = TRUE;//validation has passed
+            $state = true;//validation has passed
         }
+
         return $state;
     }
 
@@ -188,9 +237,11 @@ class FluentValidator implements LoggerAwareInterface
      * convenience method to return an array of messages generated during the validation
      * @return array
      */
-    public function getMessages(){
+    public function getMessages()
+    {
         $out = [];
-        return $this->doGetMessages($this->results,$out);
+
+        return $this->doGetMessages($this->results, $out);
     }
 
     /**
@@ -198,29 +249,30 @@ class FluentValidator implements LoggerAwareInterface
      * Not beautiful but it gets the job done
      * @return array
      */
-    private function doGetMessages($results,&$out){
+    private function doGetMessages($results, &$out)
+    {
 
-        foreach($results as $rule => $constraints){
-            $isAr = FALSE;
+        foreach ($results as $rule => $constraints) {
+            $isAr = false;
             /** @var ValidationResult $result */
-            if(is_array($constraints)){
+            if (is_array($constraints)) {
                 //If its an array we need to make an entry for it
                 $out[$rule] = [];
-                $isAr = TRUE;//We made an array, we need to know this later
+                $isAr = true;//We made an array, we need to know this later
             } else {
                 //Wrap non arrays to make the next bit play nice
                 $constraints = array($constraints);
             }
             foreach ($constraints as $name => $result) {
-                if(is_array($result)){
+                if (is_array($result)) {
                     //If the result is an array we need to drill down into it again
                     $out[$rule][$name] = [];
-                    $this->doGetMessages($result,$out[$rule][$name]);
+                    $this->doGetMessages($result, $out[$rule][$name]);
                 } else {
                     $mes = $result->getMessage();
-                    if($mes !== NULL){
+                    if ($mes !== null) {
                         //This is kind of horrible, but to make it work and everything end up named properly it has to do this
-                        if($isAr){
+                        if ($isAr) {
                             $out[$rule][] = $result->getMessage();
                         } else {
                             $out[] = $result->getMessage();
@@ -229,6 +281,7 @@ class FluentValidator implements LoggerAwareInterface
                 }
             }
         }
+
         return $out;
     }
 
@@ -237,7 +290,8 @@ class FluentValidator implements LoggerAwareInterface
      * If we get all the results we can see which elements actually failed validation
      * @return array|\Drupal\twhiston\FluentValidator\Result\ValidationResult[]
      */
-    public function getResults(){
+    public function getResults()
+    {
         return $this->results;
     }
 
