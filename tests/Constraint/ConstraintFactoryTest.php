@@ -1,8 +1,8 @@
 <?php
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
+use Drupal\twhiston\FluentValidator\Constraint\ConstraintFactory;
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\FluentValidator\Constraint\Constraint;
 
 /**
  * Created by PhpStorm.

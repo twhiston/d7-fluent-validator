@@ -6,12 +6,19 @@
  * Time: 14:21
  */
 
-namespace Drupal\twhiston\DrushOptionValidator\VRule;
+namespace Drupal\twhiston\FluentValidator\VRule;
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
+use Drupal\twhiston\FluentValidator\Constraint\Constraint;
+use twhiston\twLib\Enum\Enum;
+
+abstract class NoDefault extends Enum
+{
+    const No = 0;
+}
 
 /**
- * Interface Option
+ * Fluent Rule.
+ * Add constraints to this
  * @package Drupal\twhiston\DrushOptionValidator
  */
 class VRule
@@ -25,19 +32,38 @@ class VRule
     private $default;
 
 
-    public function __construct($name, $constraints = null, $default = null)
-    {
-
+    public function __construct($name, $default = NoDefault::No) {
         $this->name = $name;
-        $this->constraints = (!is_array($constraints)) ? array() : $constraints;
         $this->default = $default;
+        $this->messages = [];
+    }
 
+    public function setDefaultValue($default = NoDefault::No) {
+        $this->default = $default;
+        return $this;
+    }
+
+    public function addConstraint(Constraint $constraint){
+        $this->constraints[] = $constraint;
+        return $this;
+    }
+
+    public function addConstraints($constraints){
+        $constraints = (!is_array($constraints)) ? array($constraints) : $constraints;
+        $this->constraints = array_merge($constraints, $this->constraints);
+        return $this;
+    }
+
+    public function setConstraints($constraints){
+        $constraints = (!is_array($constraints)) ? array($constraints) : $constraints;
+        $this->constraints = array_merge($constraints, $this->constraints);
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getRuleName()
+    public function getName()
     {
         return $this->name;
     }
@@ -45,7 +71,7 @@ class VRule
     /**
      * @return mixed
      */
-    public function getDefaultValue()
+    public function getDefault()
     {
         return $this->default;
     }
@@ -55,7 +81,7 @@ class VRule
      * Try using the Constraints factory to make this
      * @return Constraint[]
      */
-    public function getValidationConstraints()
+    public function getConstraints()
     {
         return $this->constraints;
     }

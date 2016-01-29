@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\twhiston\DrushOptionValidator\Constraint\Numeric;
+namespace Drupal\twhiston\FluentValidator\Constraint\Numeric;
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\Constraint;
-use Drupal\twhiston\DrushOptionValidator\ValidationResult;
+use Drupal\twhiston\FluentValidator\Constraint\Constraint;
+use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 
 /**
  * Created by PhpStorm.

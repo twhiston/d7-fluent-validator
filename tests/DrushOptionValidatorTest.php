@@ -7,9 +7,9 @@
  * Time: 18:34
  */
 
-use Drupal\twhiston\DrushOptionValidator\DrushOptionValidator;
-use Drupal\twhiston\DrushOptionValidator\VRule\VRule;
-use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
+use Drupal\twhiston\FluentValidator\FluentValidator;
+use Drupal\twhiston\FluentValidator\VRule\VRule;
+use Drupal\twhiston\FluentValidator\Constraint\ConstraintFactory;
 
 class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
 
@@ -57,7 +57,7 @@ class DrushOptionValidatorTest extends PHPUnit_Framework_TestCase {
     $options[] = new VRule('field_3',ConstraintFactory::makeConstraints($constraints),666);
 
 
-    $vali = new DrushOptionValidator($options);
+    $vali = new FluentValidator($options);
 
     $data = [];
     $data['field_1'] = 9;

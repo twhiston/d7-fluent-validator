@@ -7,12 +7,12 @@
  * Time: 00:18
  */
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\Between;
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThan;
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\GreaterThanEquals;
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\IsNumeric;
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\LessThan;
-use Drupal\twhiston\DrushOptionValidator\Constraint\Numeric\LessThanEquals;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\Between;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThanEquals;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\IsNumeric;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\LessThan;
+use Drupal\twhiston\FluentValidator\Constraint\Numeric\LessThanEquals;
 
 
 class NumericTest extends PHPUnit_Framework_TestCase {

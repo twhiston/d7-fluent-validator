@@ -7,7 +7,8 @@
  * Time: 01:04
  */
 
-use Drupal\twhiston\DrushOptionValidator\Constraint\CallableConstraint;
+use Drupal\twhiston\FluentValidator\Constraint\CallableConstraint;
+
 class CallableConstraintTest extends PHPUnit_Framework_TestCase
 {
 

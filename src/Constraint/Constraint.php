@@ -6,8 +6,9 @@
  * Time: 14:48
  */
 
-namespace Drupal\twhiston\DrushOptionValidator\Constraint;
+namespace Drupal\twhiston\FluentValidator\Constraint;
 
+use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 
 /**
  * Interface Constraint

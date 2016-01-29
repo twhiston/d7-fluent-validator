@@ -7,8 +7,8 @@
  * Time: 18:22
  */
 
-use Drupal\twhiston\DrushOptionValidator\VRule\VRule;
-use Drupal\twhiston\DrushOptionValidator\Constraint\ConstraintFactory;
+use Drupal\twhiston\FluentValidator\VRule\VRule;
+use Drupal\twhiston\FluentValidator\Constraint\ConstraintFactory;
 
 class OptionTest extends PHPUnit_Framework_TestCase {
 

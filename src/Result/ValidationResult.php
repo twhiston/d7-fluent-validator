@@ -6,28 +6,30 @@
  * Time: 14:49
  */
 
-namespace Drupal\twhiston\DrushOptionValidator;
+namespace Drupal\twhiston\FluentValidator\Result;
 
 
 class ValidationResult
 {
+    /** @var Status */
+    private $status;
 
-    private $state;
-
+    /** @var  string */
     private $message;
 
-    public function __construct($state, $message = null)
+
+    public function __construct($status, $message = null)
     {
-        $this->state = $state;
+        $this->status = $status;
         $this->message = $message;
     }
 
     /**
      * @return mixed
      */
-    public function getState()
+    public function getStatus()
     {
-        return $this->state;
+        return $this->status;
     }
 
     /**

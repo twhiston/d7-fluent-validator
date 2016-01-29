@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\twhiston\DrushOptionValidator\Constraint;
+namespace Drupal\twhiston\FluentValidator\Constraint;
 
 use twhiston\twLib\Object\Instantiate;
 
