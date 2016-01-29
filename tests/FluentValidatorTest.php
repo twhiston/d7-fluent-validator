@@ -28,8 +28,8 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $lin = 5;//Same here
 
         $data = [
-          'anum' => 25, // If your function call has a single input parameter pass it like this
-          'field1' => ['args' => [$f1in, 'correct'] ],//if a CallableConstraint function call takes multiple parameters you need to wrap them in ['args'=>[]]
+          'anum' => 25, //If your function call has a single input parameter pass it like this
+          'field1' => ['args' => [$f1in, 'correct'] ],//If a CallableConstraint function call takes multiple parameters you need to wrap them in ['args'=>[]]
           'lambda' => ['args' => [$lin,12,2]]//This might prove an issue if your CallableConstraint only needs an array with a key called args,
                                              //but you could always wrap it in something else and unwrap it in your callback
                                              //as far as i know no php native function needs an 'args' key in an array
@@ -37,7 +37,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         ];
 
         //Make some rules
-        $r = new VRule('field1','default');//rule name matches the field name in our data
+        $r = new VRule('field1');//rule name matches the field name in our data
         $r->addConstraint(
           new CallableConstraint('is_string')
         ) ->addConstraint(
@@ -47,14 +47,14 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
                                                             // This means your validation can fail because you forgot to properly map the true state
         );
 
-        $r2 = new VRule('anum',23);
+        $r2 = new VRule('anum');
         $r2->addConstraint(
           new GreaterThan(10)
         )->addConstraint(
           new LessThan(29)
         );
 
-        $r3 = new VRule('lambda','you suck');
+        $r3 = new VRule('lambda');
         $r3->addConstraint(
           new CallableConstraint(
               function($a,$b,$c){
@@ -154,14 +154,14 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $r = new VRule('wrapped');//we do not pass a default as each rule can deal with its own fields defaults
 
         //These are our sub rules
-        $r1 = new VRule('field1','default');//rule name matches the field name in our data
+        $r1 = new VRule('field1');//rule name matches the field name in our data
         $r1->addConstraint(
           new CallableConstraint('is_string')
         ) ->addConstraint(
           new CallableConstraint('strcmp' , [ 0 => TRUE ] )
         );
 
-        $r2 = new VRule('field2',23);
+        $r2 = new VRule('field2');
         $r2->addConstraint(
           new GreaterThan(10)
         )->addConstraint(

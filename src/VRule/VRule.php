@@ -11,10 +11,6 @@ namespace Drupal\twhiston\FluentValidator\VRule;
 use Drupal\twhiston\FluentValidator\Constraint\Constraint;
 use twhiston\twLib\Enum\Enum;
 
-abstract class NoDefault extends Enum
-{
-    const No = 0;
-}
 
 /**
  * Fluent Rule.
@@ -29,19 +25,14 @@ class VRule
     /** @var  Constraint|VRule[] */
     private $tree;
 
-    private $default;
 
 
-    public function __construct($name, $default = NoDefault::No) {
+    public function __construct($name) {
         $this->name = $name;
-        $this->default = $default;
         $this->messages = [];
     }
 
-    public function setDefaultValue($default = NoDefault::No) {
-        $this->default = $default;
-        return $this;
-    }
+
 
     public function addConstraint(Constraint $constraint){
         $this->tree[] = $constraint;
@@ -73,13 +64,6 @@ class VRule
         return $this->name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDefault()
-    {
-        return $this->default;
-    }
 
     /**
      * Should return an array of callables/closures, which return TRUE or FALSE

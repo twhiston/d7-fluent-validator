@@ -150,7 +150,7 @@ class FluentValidator implements LoggerAwareInterface
                 foreach ($branches as $branch) {
                     //are we a rule or a constraint
                     if(in_array('Drupal\\twhiston\\FluentValidator\\Constraint\\Constraint', class_implements($branch,true))){
-                        if($this->validateConstraint($branch,$data,$name,$rule->getDefault(),$results[$name]) == FALSE){
+                        if($this->validateConstraint($branch,$data,$name,$results[$name]) == FALSE){
                             $state = FALSE;
                         }
                     } else if(  is_subclass_of($branch,'Drupal\\twhiston\\FluentValidator\\VRule\\VRule') ||
@@ -166,7 +166,7 @@ class FluentValidator implements LoggerAwareInterface
         return $state;
     }
 
-    public function validateConstraint(Constraint $constraint, $data, $name, $def, &$results){
+    private function validateConstraint(Constraint $constraint, &$data, $name, &$results){
 
         $state = FALSE;
         /** @var ValidationResult $result */
@@ -179,15 +179,6 @@ class FluentValidator implements LoggerAwareInterface
             if(array_key_exists('LogLevel',$this->options) && $this->options['LogLevel'] == 'debug'){
                 //Do some logging
                 $this->logger->notice('@rule validation failed',array('@rule' => $name));
-            }
-
-            //Do we set this input value to a default?
-            if ($def !== NoDefault::No) {
-                if(array_key_exists('LogLevel',$this->options) && $this->options['LogLevel'] == 'debug'){
-                    //Do some logging
-                    $this->logger->notice('@rule set default value @value',array('@rule' => $name, '@value' => $def ));
-                }
-                $data[$name] = $def;
             }
         } else {
             $state = TRUE;//validation has passed

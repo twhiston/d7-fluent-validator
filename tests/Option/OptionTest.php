@@ -25,12 +25,11 @@ class OptionTest extends PHPUnit_Framework_TestCase {
       'args' => array(7,11),
     ];
 
-    $option = new VRule('tester',666);
+    $option = new VRule('tester');
     $option->addTree(ConstraintFactory::makeConstraints($constraints));
 
     $this->assertEquals(2,count($option->getTree()));
     $this->assertRegExp('/tester/',$option->getName());
-    $this->assertEquals(666,$option->getDefault());
 
     $constraints[] = [
       'class' => 'Broken\\Will Not Return',
