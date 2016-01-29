@@ -14,6 +14,8 @@ use Drupal\twhiston\FluentValidator\VRule\VRule;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
+
+
 /**
  * Class DrushOptionSanitizer
  * @package Drupal\twhiston\DrushOptionValidator
@@ -75,6 +77,7 @@ class FluentValidator implements LoggerAwareInterface
     /**
      * @param \Psr\Log\LoggerInterface $logger
      * @return $this
+     * @codeCoverageIgnore
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -220,10 +223,12 @@ class FluentValidator implements LoggerAwareInterface
               ) && $this->options['loglevel'] == 'debug'
             ) {
                 if($this->logger !== NULL) {
+                    //@codeCoverageIgnoreStart
                     $this->logger->notice(
                       '@rule validation failed',
                       array('@rule' => $name)
                     );
+                    //codeCoverageIgnoreEnd
                 }
             }
         } else {

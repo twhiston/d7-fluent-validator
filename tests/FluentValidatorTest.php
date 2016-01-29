@@ -1,11 +1,12 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: Thomas Whiston
  * Date: 28/01/2016
  * Time: 23:50
  */
+
+require_once '/Users/webdev/Sites/_Core/mockery/library/Mockery.php';
 
 use Drupal\twhiston\FluentValidator\FluentValidator;
 use Drupal\twhiston\FluentValidator\VRule\VRule;
@@ -15,11 +16,17 @@ use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan;
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\LessThan;
 
+
 /**
  * Class FluentValidatorTest
  */
 class FluentValidatorTest extends PHPUnit_Framework_TestCase
 {
+
+    public function tearDown()
+    {
+        Mockery::close();
+    }
 
     public function testSimpleFluentValidator(){
 
@@ -182,7 +189,12 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
           )
         );
 
-        $result = $vali->reset()->setOptions($options)->addVRule($r)->addVRule($r2)->addVRule($r5)->validate($data);
+        $rules = [
+          $r,$r2,$r5
+        ];
+
+
+        $result = $vali->reset()->setOptions($options)->addVRules($rules)->validate($data);
         $this->assertFalse($result);
 
         $mes = $vali->getMessages();
