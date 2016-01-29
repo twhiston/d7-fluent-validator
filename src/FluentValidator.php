@@ -122,7 +122,7 @@ class FluentValidator implements LoggerAwareInterface
     public function validate(&$data){
         //start the validation chain
         $this->results = [];
-        $state = TRUE;//Innocent until proven guilty
+        $state = TRUE;//Innocent until proven guilty TODO NO!!!
         return $this->doValidate($data,$this->rules,$state,$this->results);
     }
 
@@ -153,6 +153,7 @@ class FluentValidator implements LoggerAwareInterface
                         if($this->validateConstraint($branch,$data,$name,$results[$name]) == FALSE){
                             $state = FALSE;
                         }
+
                     } else if(  is_subclass_of($branch,'Drupal\\twhiston\\FluentValidator\\VRule\\VRule') ||
                                 $branch instanceof VRule === TRUE ){
                         //If its a rule we recursively call this function with the right data

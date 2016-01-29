@@ -31,13 +31,18 @@ class CallableConstraintTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($r->getStatus());
 
         $a = [
-            "test" => "data",
+            ["test" => "data"],//array_key_exists needs an array as its second parameter
         ];
 
-        $c = new CallableConstraint('array_key_exists');
-        $r = $c->validate(['args' => array('test', $a )]);
+        $c = new CallableConstraint('array_key_exists',$a);
+        $r = $c->validate('test');
         $this->assertTrue($r->getStatus());
-        $r = $c->validate(['args' => ['beast',$a]]);
+
+        $a = [
+          ["beast" => "data"],//array_key_exists needs an array as its second parameter
+        ];
+
+        $r = $c->validate('beast');
         $this->assertFalse($r->getStatus());
 
         //TODO add more tests

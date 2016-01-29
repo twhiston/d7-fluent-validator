@@ -27,24 +27,28 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $f1in = 'correct';//Imagine we got this from drush_get_option or something
         $lin = 5;//Same here
 
+        //The data to validate
         $data = [
-          'anum' => 25, //If your function call has a single input parameter pass it like this
-          'field1' => ['args' => [$f1in, 'correct'] ],//If a CallableConstraint function call takes multiple parameters you need to wrap them in ['args'=>[]]
-          'lambda' => ['args' => [$lin,12,2]]//This might prove an issue if your CallableConstraint only needs an array with a key called args,
-                                             //but you could always wrap it in something else and unwrap it in your callback
-                                             //as far as i know no php native function needs an 'args' key in an array
-                                             // wrapping input parameters in args is only required for callable constraints, you can do what you like in your own Constraint classes
+            'anum' => 25,
+            'field1' => $f1in,
+            'field2' => $lin
         ];
 
+        //Some things we call may need some additional info from us.
+        //strcmp needs a str to cmp,
+        //greaterthan needs something to be greater than.
         //Make some rules
         $r = new VRule('field1');//rule name matches the field name in our data
         $r->addConstraint(
           new CallableConstraint('is_string')
         ) ->addConstraint(
-          new CallableConstraint('strcmp' , [ 0 => TRUE ] ) // Callable constraints expect a return value that can be mapped to a BOOL
-                                                            // strcmp outputs 0 if true, so we need to remap this to TRUE.
-                                                            // you only need to map TRUE values returned from your callable as not found values will equate to FALSE
-                                                            // This means your validation can fail because you forgot to properly map the true state
+          new CallableConstraint('strcmp' , //standard php function call
+            ['correct'] ,  //pass an array of additional values to pass to your function, data to be validated is always arg 1, so these will be arg2,arg3...
+
+            [ 0 => TRUE ] ) // Callable constraints expect a return value that can be mapped to a BOOL
+                            // strcmp outputs 0 if true, so we need to remap this to TRUE.
+                            // you only need to map TRUE values returned from your callable as not found values will equate to FALSE
+                            // This means your validation can fail because you forgot to properly map the true state
         );
 
         $r2 = new VRule('anum');
@@ -63,7 +67,8 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
                       return TRUE;
                   }
                   return FALSE;
-              }
+              },
+                [12,2]//$b and $c
           )
         );
 
@@ -73,68 +78,61 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $data = [
           'anum' => 30, //fails
-          'field1' => ['args' => [$f1in, 'correct'] ],
-          'lambda' => ['args' => [$lin,12,2]]
+          'field1' => $f1in ,
+          'lambda' => $lin
         ];
-
 
         $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);//you can pass a new set of options to reset, or pass nothing to keep existing
         $this->assertFalse($result);
 
         $data = [
           'anum' => 25,
-          'field1' => ['args' => [$f1in, 'incorrect'] ],//fails
-          'lambda' => ['args' => [$lin,12,2]]
+          'field1' => $f1in,//fails
+          'lambda' => $lin
         ];
 
+        $r4 = new VRule('field1');//rule name matches the field name in our data
+        $r4->addConstraint(
+          new CallableConstraint('is_string')
+        ) ->addConstraint(
+          new CallableConstraint('strcmp' , //standard php function call
+            ['incorrect'] ,  //pass an array of additional values to pass to your function, data to be validated is always arg 1, so these will be arg2,arg3...
 
-        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
+            [ 0 => TRUE ] ) // Callable constraints expect a return value that can be mapped to a BOOL
+                            // strcmp outputs 0 if true, so we need to remap this to TRUE.
+                            // you only need to map TRUE values returned from your callable as not found values will equate to FALSE
+                            // This means your validation can fail because you forgot to properly map the true state
+        );
+
+        $result = $vali->reset()->addVRule($r4)->addVRule($r2)->addVRule($r3)->validate($data);
         $this->assertFalse($result);
 
-        //If you want your Callable to send a message that you can pick up in $vali->getMessages() or ->GetResults return a Validation Result
-        $r3 = new VRule('lambda','you suck');
-        $r3->addConstraint(
+
+
+        $data = [
+          'anum' => 25,
+          'field1' => $f1in,
+          'lambda' => $lin
+        ];
+
+        $r5 = new VRule('lambda');
+        $r5->addConstraint(
           new CallableConstraint(
             function($a,$b,$c){
                 //Real exciting!
                 if($a > $c && $a < $b){
-                    return new ValidationResult(TRUE,'worked');
+                    return TRUE;
                 }
-                return new ValidationResult(FALSE,'failed');
-            }
+                return FALSE;
+            },
+            [3,2]//$b and $c
           )
         );
 
-        $data = [
-          'anum' => 25,
-          'field1' => ['args' => [$f1in, 'incorrect'] ],//fails
-          'lambda' => ['args' => [$lin,12,2]]
-        ];
-
-        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
-        $this->assertFalse($result);
-        $ms = $vali->getMessages();
-
-        $this->assertRegExp('/Validation Passed/',$ms['field1'][0]);
-        $this->assertRegExp('/Validation Failed/',$ms['field1'][1]);
-        $this->assertRegExp('/Validation Passed/',$ms['anum'][0]);
-        $this->assertRegExp('/Validation Passed/',$ms['anum'][1]);
-        $this->assertRegExp('/worked/',$ms['lambda'][0]);
-
-
-
-        $data = [
-          'anum' => 25,
-          'field1' => ['args' => [$f1in, 'correct'] ],
-          'lambda' => ['args' => [$lin,3,2]]//fails
-        ];
-
-
-        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r3)->validate($data);
+        $result = $vali->reset()->addVRule($r)->addVRule($r2)->addVRule($r5)->validate($data);
         $this->assertFalse($result);
         $rs = $vali->getMessages();
-        $this->assertRegExp('/failed/',$rs['lambda'][0]);
-
+        $this->assertRegExp('/Validation Failed/',$rs['lambda'][0]);
 
     }
 
@@ -144,10 +142,10 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $data = [
           'wrapped' => [
-            'field1' => [ 'args' => ['input', 'input'] ],
+            'field1' => 'input',
             'field2' => 15
           ],
-          'lambda' => ['args' => [5,12,2]]
+          'lambda' => 5
         ];
 
         //to pass nested arrays like this we can use a rule in a constraint
@@ -158,7 +156,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $r1->addConstraint(
           new CallableConstraint('is_string')
         ) ->addConstraint(
-          new CallableConstraint('strcmp' , [ 0 => TRUE ] )
+          new CallableConstraint('strcmp' , ['input'], [ 0 => TRUE ] )
         );
 
         $r2 = new VRule('field2');
@@ -172,7 +170,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $r->addRule($r1)->addRule($r2);
 
         //Create a standard rule at the same level as 'wrapped' field
-        $r3 = new VRule('lambda','you suck');
+        $r3 = new VRule('lambda');
         $r3->addConstraint(
           new CallableConstraint(
             function($a,$b,$c){
@@ -181,7 +179,8 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
                     return new ValidationResult(TRUE,'worked');
                 }
                 return new ValidationResult(FALSE,'failed');
-            }
+            },
+            [12,2]
           )
         );
 
@@ -192,7 +191,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $data = [
           'wrapped' => [
-            'field1' => [ 'args' => ['input', 'incorrect'] ],
+            'field1' => 'nonput',
             'field2' => 15
           ]
         ];

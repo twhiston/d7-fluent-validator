@@ -18,10 +18,18 @@ class CallableConstraint implements Constraint
 
     private $outputMap;
 
-    public function __construct($callable, $outputMap = NULL)
+    private $args;
+
+    public function __construct($callable, $args = NULL, $outputMap = NULL)
     {
         $this->callable = $callable;
+
+        $this->args = is_array($args)?$args:array($args);
         $this->outputMap = $outputMap;
+    }
+
+    public function setArgs($args){
+        $this->args = is_array($args)?$args:array($args);
     }
 
     public function validate($data)
@@ -33,13 +41,13 @@ class CallableConstraint implements Constraint
         //If the function only has one argument or it is an array without an args key
         //we can just pass it the single data variable
         $output = NULL;
-        if( ( $nargs === 1 && !is_array($data) ) ||
-            ( $nargs === 1 && is_array($data) && !array_key_exists('args',$data) )
-        ) {
+        if( ( $nargs === 1 && !is_array($data) )) {
             $output = $call($data);
-        } elseif(array_key_exists('args', $data)) {
+        } else {
             //if not then we need to make sure the data has the right number of arguments
-            $args = array_slice($data['args'], 0, $nargs);
+            $args = $this->args;
+            $c = array_unshift($args,$data);
+            $args = array_slice($args, 0, $nargs);//If somehow we have too many arguments for the function slice off the end ones
             $output = call_user_func_array($call,$args);//call it
         }
 
