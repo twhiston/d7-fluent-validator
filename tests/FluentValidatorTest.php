@@ -257,6 +257,15 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $result = $vali->addVRule($r)->addVRule($r3)->validate($data);//Add our wrapped rules and our normal rule
         $this->assertTrue($result);
 
+        $mes = $vali->getMessages();
+        $res = $vali->getResults();
+
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field1'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field2'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field2'][1]);
+        $this->assertRegExp('/worked/',$mes['lambda'][0]);
+
 
         $data = [
           'wrapped' => [
@@ -269,7 +278,20 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($result);
 
         $mes = $vali->getMessages();
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field1'][0]);
+        $this->assertRegExp('/Validation Failed/',$mes['wrapped']['field1'][1]);
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field2'][0]);
+        $this->assertRegExp('/Validation Passed/',$mes['wrapped']['field2'][1]);
+
         $res = $vali->getResults();
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['wrapped']['field1'][0]);
+        $this->assertTrue($res['wrapped']['field1'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['wrapped']['field1'][1]);
+        $this->assertFalse($res['wrapped']['field1'][1]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['wrapped']['field2'][0]);
+        $this->assertTrue($res['wrapped']['field2'][0]->getStatus());
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult',$res['wrapped']['field2'][1]);
+        $this->assertTrue($res['wrapped']['field2'][0]->getStatus());
 
 
         //Now lets validate something stupid complicated and nested.
