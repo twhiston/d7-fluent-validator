@@ -50,6 +50,7 @@ class VRule
     public function __construct($name) {
         $this->name = $name;
         $this->messages = [];
+        return $this;
     }
 
     /**

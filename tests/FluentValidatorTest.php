@@ -463,4 +463,195 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
     }
 
+    public function testNumericallyKeyedArrays(){
+
+        $data = [ 'magazines' => [
+          [ 'author' => 'Steve Dongus', 'publication' => 'penthouse', 'year' => 2015],
+          [ 'author' => 'Dr. Mantis Toboggan', 'publication' => '34e3se#@&#n', 'year' => '(*#HNS:']
+         ]
+        ];
+
+        $c = function($data){
+            if (ctype_alpha(str_replace(' ', '', $data)))
+            {
+                return new ValidationResult(TRUE);
+            }
+            return new ValidationResult(FALSE);
+        };
+
+        $author = new VRule('author');
+        $author->addConstraint(
+          new CallableConstraint(
+              $c
+          )
+        );
+        $publication = new VRule('publication');
+        $publication->addConstraint(
+          new CallableConstraint(
+            $c
+          )
+        );
+        $year = new VRule('year');
+        $year->addConstraint( new CallableConstraint('is_numeric'));
+
+        $magazines = new VRule('magazines');
+        foreach ($data['magazines'] as $id => $mag) {
+
+            $v = new VRule((string)$id);//The id MUST be a string, even if our data array is numerically keyed
+            $v->addRule($author)->addRule($publication)->addRule($year);
+            $magazines->addRule($v);
+        }
+
+        $vali = new FluentValidator();
+        $s = $vali->addVRule($magazines)->validate($data);
+        $this->assertFalse($s);
+
+        $r = $vali->getResults();
+
+        $data = [ 'magazines' => [
+                [ 'author' => 'Steve Dongus', 'publication' => 'penthouse', 'year' => 2015],
+                [ 'author' => 'Dr Mantis Toboggan', 'publication' => 'the philadelphia chronicle', 'year' => 2016]
+            ]
+        ];
+
+        $s = $vali->clearResults()->validate($data);
+        $this->assertTrue($s);
+
+        //Root array is numeric
+        $data = [
+          [ 'author' => 'Steve Dongus', 'publication' => 'penthouse', 'year' => 2015],
+          [ 'author' => 'Dr Mantis Toboggan', 'publication' => 'the philadelphia chronicle', 'year' => 2016]
+        ];
+
+        $vali->reset();
+        foreach ($data as $id => $mag) {
+            $v = new VRule((string)$id);//The id MUST be a string, even if our data array is numerically keyed
+            $v->addRule($author)->addRule($publication)->addRule($year);
+            $vali->addVRule($v);
+        }
+        $s = $vali->validate($data);
+        $r = $vali->getResults();
+        $this->assertTrue($s);
+
+    }
+
+    public function testDeeperArrays(){
+
+        /**
+         * This data is a bit more complicated as it has 2 sets of fields that have the same sort of data, of course we can validate this, but we also have multiple arrays
+         * and a deeper nesting level than we have for other stuff
+         */
+        $data = [
+          'field1' => [
+              'summary' => 'It is a tale. Told by an idiot, full of sound and fury, Signifying nothing'
+              ,
+              'author' => [
+                  'name' => 'Tom Whiston'
+              ],
+              'reviews' => [
+                  'magazines' => [
+                    [ 'author' => 'Steve Dongus', 'publication' => 'penthouse', 'year' => 2015],
+                    [ 'author' => 'Dr Mantis Toboggan', 'publication' => 'the philadelphia chronicle', 'year' => 2016],
+                  ],
+                'tv' => [
+                  [ 'author' => 'Steve Dongus', 'publication' => 'penthouse', 'year' => 2015],
+                  [ 'author' => 'Dr Mantis Toboggan', 'publication' => 'the philadelphia chronicle', 'year' => 2016],
+                ],
+
+              ]
+          ],
+            //This one is corrupt
+          'field2' => [
+            'summary' => 'hspjyshp828sosoyesao289haosyhoas',
+            'author' => [
+              'name' => '12423321#*U$#@(!'
+            ],
+            'reviews' => [
+              'magazines' => [
+                [ 'author' => 'RRR**@*F(HP(*S(*#@*#', 'publication' => '#E@#I', 'year' => '$#NEES@!123o'],
+              ],
+              'tv' => [
+                [ 'author' => 'hs.elshe989988998&&', 'publication' => '#@#2sd', 'year' => ')('],
+                [ 'author' => 's&WN3SUxSA)({', 'publication' => '}{)+(', 'year' => ''],
+              ]
+            ]
+          ],
+        ];
+
+        //Building a validation tree for something like this its best to work outwards
+        $summary = new VRule('summary');
+        $summary->addConstraint( new CallableConstraint('is_string'));
+
+        $author = new VRule('author');
+        $name = new VRule('name');
+
+        $nospecial = new CallableConstraint(
+          function($data) {
+              if (ctype_alpha(str_replace(' ', '', $data))) {
+                  return new ValidationResult(true);
+              }
+              return new ValidationResult(false);
+          }
+        );
+
+        $name->addConstraint(
+            $nospecial
+        );
+        $author->addRule($name);
+
+        $rauthor = new VRule('author');
+        $rauthor->addConstraint(
+            $nospecial
+        );
+        $publication = new VRule('publication');
+        $publication->addConstraint(
+            $nospecial
+        );
+
+        $year = new VRule('year');
+        $year->addConstraint( new CallableConstraint('is_numeric'));
+
+        //Some more top level keys just involve adding things together
+        $reviews = new VRule('reviews');
+        foreach ($data['field1']['reviews'] as $type => $dt) {
+            $r = new VRule($type);
+            foreach ($dt as $nm => $item) {
+                $sub = new VRule((string)$nm);
+                $sub->addRule($rauthor)->addRule($publication)->addRule($year);
+                $r->addRule($sub);
+            }
+            $reviews->addRule($r);
+        }
+
+        $field1 = new VRule('field1');
+        $field1->addRule($summary)->addRule($author)->addRule($reviews);
+
+        $field2 = new VRule('field2');
+        $reviews2 = new VRule('reviews');
+        foreach ($data['field2']['reviews'] as $type => $dt) {
+            $r = new VRule($type);
+            foreach ($dt as $nm => $item) {
+                $sub = new VRule((string)$nm);
+                $sub->addRule($rauthor)->addRule($publication)->addRule($year);
+                $r->addRule($sub);
+            }
+            $reviews2->addRule($r);
+        }
+        $field2->addRule($summary)->addRule($author)->addRule($reviews2);
+
+        $vali = new FluentValidator();
+
+        $vali->addVRule($field1);
+        $s = $vali->validate($data);
+        $r = $vali->getResults();
+        $this->assertTrue($s);
+
+        $vali->clearResults()->addVRule($field2);
+        $s = $vali->validate($data);
+        $this->assertFalse($s);
+
+        $r = $vali->getResults();
+        
+    }
+
 }
