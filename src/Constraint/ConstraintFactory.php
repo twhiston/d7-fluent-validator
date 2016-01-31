@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Thomas Whiston
+ * Date: 26/01/2016
+ * Time: 15:29
+ */
 
 namespace Drupal\twhiston\FluentValidator\Constraint;
 
@@ -6,14 +12,19 @@ use twhiston\twLib\Object\Instantiate;
 
 
 /**
- * Created by PhpStorm.
- * User: Thomas Whiston
- * Date: 26/01/2016
- * Time: 15:29
+ * Class ConstraintFactory
+ * Make a constraint or an array of constraints
+ * @package Drupal\twhiston\FluentValidator\Constraint
  */
 class ConstraintFactory
 {
 
+    /**
+     * Pass an array of names and get an array of constraints
+     * @param $constraints
+     * @return array
+     * @throws \Exception
+     */
     static public function makeConstraints($constraints)
     {
 
@@ -34,6 +45,12 @@ class ConstraintFactory
         return $cout;
     }
 
+    /**
+     * @param $class string class name for FluentValidator types or a fully qualified namespace for others
+     * @param $args mixed[] arguments to pass to the Constraint constructor
+     * @return null
+     * @throws \Exception If the constraint cant be created this will throw an exception
+     */
     public static function makeConstraint($class, $args)
     {
 

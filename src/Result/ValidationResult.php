@@ -9,15 +9,25 @@
 namespace Drupal\twhiston\FluentValidator\Result;
 
 
+/**
+ * Class ValidationResult
+ * Simple wrapper for a result that allows us to store a message when we get a result
+ * @package Drupal\twhiston\FluentValidator\Result
+ */
 class ValidationResult
 {
-    /** @var Status */
+    /** @var boolean */
     private $status;
 
     /** @var  string */
     private $message;
 
 
+    /**
+     * ValidationResult constructor.
+     * @param $status boolean
+     * @param null $message
+     */
     public function __construct($status, $message = null)
     {
         $this->status = $status;
@@ -25,7 +35,7 @@ class ValidationResult
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     public function getStatus()
     {
@@ -33,7 +43,7 @@ class ValidationResult
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getMessage()
     {

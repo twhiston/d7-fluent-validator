@@ -17,31 +17,47 @@ use Psr\Log\LoggerInterface;
 
 
 /**
- * Class DrushOptionSanitizer
- * @package Drupal\twhiston\DrushOptionValidator
+ * Class FluentValidator
+ * The validator that parses our rules
+ * $vali = new FluentValidator();
+ * $result = $vali->setOptions($options)->addVRule($r)->addVRule($r2)->validate($data);
+ * @package Drupal\twhiston\FluentValidator
  */
 class FluentValidator implements LoggerAwareInterface
 {
 
-
     /**
+     * All our rules
      * @var VRule[] $rules
      */
     private $rules;
 
-    /** @var ValidationResult[] */
+    /**
+     * The results of the validation in a tree structured the same as the input data
+     * @var ValidationResult[]
+     */
     private $results;
 
-    /** @var  LoggerInterface */
+    /**
+     * PSR-3 Compatible class for logging. If using drupal see https://bitbucket.org/twhiston/drupallogger
+     * @var  LoggerInterface
+     */
     private $logger;
 
     /**
-     * @var
+     * Array of options for the validator, as a keyed array.
+     * Options:
+     *      loglevel - PSR-3 logging level, set to debug to get some extra messages about validation
+     * @var mixed[]
      */
     private $options;
 
     /**
-     * @var null
+     * The state of validation,
+     *  null - no validation has occured
+     *  true - validation success
+     *  false - validation failure
+     * @var null|boolean
      */
     private $state;
 
@@ -87,6 +103,7 @@ class FluentValidator implements LoggerAwareInterface
     }
 
     /**
+     * delete the  results tree, reset the validation state and delete all the rules
      * @param null $options
      * @return $this
      */
@@ -103,6 +120,10 @@ class FluentValidator implements LoggerAwareInterface
         return $this;
     }
 
+    /**
+     * Delete the results tree and reset the state
+     * @return $this
+     */
     public function clearResults()
     {
         $this->state = null;
@@ -113,7 +134,9 @@ class FluentValidator implements LoggerAwareInterface
 
 
     /**
-     * @param VRule $option
+     * Add a validation rule
+     * @param \Drupal\twhiston\FluentValidator\VRule\VRule $option
+     * @return $this
      */
     public function addVRule(VRule $option)
     {
@@ -122,16 +145,25 @@ class FluentValidator implements LoggerAwareInterface
         return $this;
     }
 
+
     /**
-     * @param $option VRule[]
+     * Add an array of validation rules to the existing rules (array_merge)
+     * @param $rules
+     * @return $this
      */
     public function addVRules($rules)
     {
+        (is_array($rules))?:array($rules);
         $this->rules = array_merge($rules, $this->rules);
 
         return $this;
     }
 
+    /**
+     * Run the validation over the rules tree and return the validation status
+     * @param $data
+     * @return bool
+     */
     public function validate(&$data)
     {
         //start the validation chain
@@ -202,6 +234,14 @@ class FluentValidator implements LoggerAwareInterface
         return $state;
     }
 
+    /**
+     * The actual validation, calls the constraint validate function and returns the status
+     * @param \Drupal\twhiston\FluentValidator\Constraint\Constraint $constraint
+     * @param $data
+     * @param $name
+     * @param $results
+     * @return bool
+     */
     private function validateConstraint(
       Constraint $constraint,
       &$data,
@@ -251,7 +291,7 @@ class FluentValidator implements LoggerAwareInterface
 
     /**
      * Re-entrant function
-     * Not beautiful but it gets the job done
+     * Builds a tree of data in the same structure as the input and results data
      * @return array
      */
     private function doGetMessages($results, &$out)
@@ -292,7 +332,7 @@ class FluentValidator implements LoggerAwareInterface
 
 
     /**
-     * If we get all the results we can see which elements actually failed validation
+     * If we get all the results we can see which elements actually failed validation and get their messages
      * @return array|\Drupal\twhiston\FluentValidator\Result\ValidationResult[]
      */
     public function getResults()
