@@ -341,8 +341,9 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $post = new VRule('postcode');
         $post->addConstraint( new CallableConstraint(
+            //preg_match must be in a lambda because it takes the data as the second argument,
+            //any simple string function calls will always send data as the first parameter
             function($data){
-
                 //At least 2 numbers && last 3 characters are a number and a letter
                 if(preg_match('/^(?=.*\d.*\d)/',$data) && preg_match('/.*[0-9]+[a-zA-Z]+[a-zA-Z]$/',$data)){
                     return new ValidationResult(TRUE);
