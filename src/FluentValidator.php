@@ -278,6 +278,92 @@ class FluentValidator implements LoggerAwareInterface
         return $state;
     }
 
+
+    /**
+     * get a numerically indexed flat array of the names of the failed rules.
+     * Useful if you just want to get all the results from a simple form
+     * Not so useful if you have lots of fields that share names, in that case get a structured tree of failures with getFailedRules()
+     * @return mixed
+     */
+    public function getFailedRuleNames(){
+        $out = [];
+       return $this->doGetFailedRuleNames($this->results,$out);
+
+    }
+
+    /**
+     * @param $results
+     * @param $out
+     * @param null $rulename
+     * @return mixed
+     */
+    private function doGetFailedRuleNames($results, &$out, $rulename = NULL){
+        foreach ($results as $rule => $constraints) {
+            /** @var ValidationResult $result */
+            if (!is_array($constraints)) {
+                //Wrap non arrays to make the next bit play nice
+                $constraints = array($constraints);
+            }
+            foreach ($constraints as $name => $result) {
+                if (is_array($result)) {
+                    //If the result is an array we need to drill down into it again
+                    $this->doGetFailedRuleNames($result, $out,$name);
+                } else {
+                    $state = $result->getStatus();
+                    if ($state === FALSE) {
+                        $out[] = $rulename;
+                    }
+                }
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Get a tree of only failed results from the validator
+     * @return array
+     */
+    public function getFailedRules(){
+        $out = [];
+        return $this->doGetFailedRules($this->results, $out);
+    }
+
+    /**
+     * Re-entrant function
+     * Builds a tree of only failed results in the same structure as the input and results data
+     * @return array
+     */
+    private function doGetFailedRules($results, &$out, $rulename = NULL)
+    {
+
+        foreach ($results as $rule => $constraints) {
+            $out[$rule] = [];
+            /** @var ValidationResult $result */
+            if (!is_array($constraints)) {
+                //Wrap non arrays to make the next bit play nice
+                $constraints = array($constraints);
+            }
+            foreach ($constraints as $name => $result) {
+                if (is_array($result)) {
+                    //If the result is an array we need to drill down into it again
+                    $this->doGetFailedRules($result, $out[$rule],$name);
+                } else {
+                    $state = $result->getStatus();
+                    if ($state === FALSE) {
+                        $out[$rulename] = $result;
+                    }
+                }
+            }
+            if(count($out[$rule]) == 0){
+                unset($out[$rule]);
+            }
+        }
+
+        return isset($out) ? $out : NULL;
+    }
+
+
     /**
      * convenience method to return an array of messages generated during the validation
      * @return array
@@ -285,7 +371,6 @@ class FluentValidator implements LoggerAwareInterface
     public function getMessages()
     {
         $out = [];
-
         return $this->doGetMessages($this->results, $out);
     }
 

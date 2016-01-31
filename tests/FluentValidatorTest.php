@@ -16,6 +16,8 @@ use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\GreaterThan;
 use Drupal\twhiston\FluentValidator\Constraint\Numeric\LessThan;
 
+//Test some actual drupal input for validation
+include_once('D7Form.php');
 
 /**
  * Class FluentValidatorTest
@@ -316,8 +318,10 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testDrupalInput(){
 
-        //Test some actual drupal input for validation
-        include('D7Form.php');
+        $this->runDrupalDataValidation();
+    }
+
+    private function runDrupalDataValidation(){
 
         //Get some potted form values
         $form_values = getDrupalData();
@@ -341,15 +345,15 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
         $post = new VRule('postcode');
         $post->addConstraint( new CallableConstraint(
-            //preg_match must be in a lambda because it takes the data as the second argument,
-            //any simple string function calls will always send data as the first parameter
-            function($data){
-                //At least 2 numbers && last 3 characters are a number and a letter
-                if(preg_match('/^(?=.*\d.*\d)/',$data) && preg_match('/.*[0-9]+[a-zA-Z]+[a-zA-Z]$/',$data)){
-                    return new ValidationResult(TRUE);
-                }
-                return new ValidationResult(FALSE);
-            }
+        //preg_match must be in a lambda because it takes the data as the second argument,
+        //any simple string function calls will always send data as the first parameter
+          function($data){
+              //At least 2 numbers && last 3 characters are a number and a letter
+              if(preg_match('/^(?=.*\d.*\d)/',$data) && preg_match('/.*[0-9]+[a-zA-Z]+[a-zA-Z]$/',$data)){
+                  return new ValidationResult(TRUE);
+              }
+              return new ValidationResult(FALSE);
+          }
         ));
 
         //What can we validate for town?
@@ -375,6 +379,88 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $vali = new FluentValidator();
         $state = $vali->addVRule($sub)->validate($form_values);
         $this->assertTrue($state);
+
+        return $vali;
+    }
+
+    public function testGetFailedRules(){
+
+        /** @var FluentValidator $vali */
+        $vali = $this->runDrupalDataValidation();
+        $f = $vali->getFailedRules();
+        $this->assertCount(0,$f);
+
+        //Now test with some stuff that actually fails
+        //Get some potted form values
+        $form_values = getDrupalData();
+
+        //create the top level of the data array
+        $sub = new VRule('submitted');
+
+        /**
+         * Our submitted data is
+         * 'number' => '123',
+         * 'street' => 'fake street',
+         * 'postcode' => 'PA1 7GT',
+         * 'town' => 'plymouth',
+         * 'country' => 'uk',
+         */
+       // $isn = new VRule('number');
+       // $isn->addConstraint(new CallableConstraint('is_numeric'));
+
+        $str = new VRule('street');
+        $str->addConstraint( new CallableConstraint('is_numeric'));
+
+      //  $post = new VRule('postcode');
+      //  $post->addConstraint( new CallableConstraint(
+        //preg_match must be in a lambda because it takes the data as the second argument,
+        //any simple string function calls will always send data as the first parameter
+//          function($data){
+//              //At least 2 numbers && last 3 characters are a number and a letter
+//              if(preg_match('/^(?=.*\d.*\d)/',$data) && preg_match('/.*[0-9]+[a-zA-Z]+[a-zA-Z]$/',$data)){
+//                  return new ValidationResult(TRUE);
+//              }
+//              return new ValidationResult(FALSE);
+//          }
+//        ));
+
+        //What can we validate for town?
+        //$town = new VRule('town');
+
+        $country = new VRule('country');
+        $uk = new CallableConstraint(
+          function($data){
+              if (preg_match(
+                '/^usa/',
+                strtolower($data))) {
+                  return new ValidationResult(TRUE);
+              }
+              return new ValidationResult(FALSE);
+          }
+        );
+        $country->addConstraint( $uk );
+
+
+        //Our submitted array key has all the other keys under it, so add them all to the 'submitted' rule tree
+        //$sub->addRule($isn)->addRule($str)->addRule($post)->addRule($country);
+        $sub->addRule($str)->addRule($country);
+        //Validate the tree
+        $vali = new FluentValidator();
+        $state = $vali->addVRule($sub)->validate($form_values);
+
+        $this->assertFalse($state);
+        $f = $vali->getFailedRules();
+        $this->assertCount(1,$f);
+        $this->assertArrayHasKey('submitted',$f);
+        $this->assertCount(2,$f['submitted']);
+
+        $frn = $vali->getFailedRuleNames();
+        $this->assertCount(2,$frn);
+        $this->assertRegExp('/^street/',$frn[0]);
+        $this->assertRegExp('/^country/',$frn[1]);
+
+        //TODO test get result by name
+
     }
 
 }
