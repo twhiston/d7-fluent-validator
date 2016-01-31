@@ -173,6 +173,46 @@ class FluentValidator implements LoggerAwareInterface
     }
 
     /**
+     * get a numerically indexed flat array of the names of the failed rules.
+     * Useful if you just want to get all the results from a simple form
+     * Not so useful if you have lots of fields that share names, in that case get a structured tree of failures with getFailedRules()
+     * @return mixed
+     */
+    public function getFailedRuleNames(){
+        $out = [];
+        return $this->doGetFailedRuleNames($this->results,$out);
+
+    }
+
+    /**
+     * Get a tree of only failed results from the validator
+     * @return array
+     */
+    public function getFailedRules(){
+        $out = [];
+        return $this->doGetFailedRules($this->results, $out);
+    }
+
+    /**
+     * convenience method to return an array of messages generated during the validation
+     * @return array
+     */
+    public function getMessages()
+    {
+        $out = [];
+        return $this->doGetMessages($this->results, $out);
+    }
+
+    /**
+     * If we get all the results we can see which elements actually failed validation and get their messages
+     * @return array|\Drupal\twhiston\FluentValidator\Result\ValidationResult[]
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    /**
      * Re-entrant function
      * If your functions need extra arguments to validate against you must pass them here in an array keyed to the fields, like the input data
      * If your callable needs a different number of functions to the ones you provide it will not run and will mark the result as an error
@@ -262,14 +302,15 @@ class FluentValidator implements LoggerAwareInterface
                 $this->options
               ) && $this->options['loglevel'] == 'debug'
             ) {
+                //@codeCoverageIgnoreStart
                 if($this->logger !== NULL) {
-                    //@codeCoverageIgnoreStart
+
                     $this->logger->notice(
                       '@rule validation failed',
                       array('@rule' => $name)
                     );
-                    //codeCoverageIgnoreEnd
                 }
+                //@codeCoverageIgnoreEnd
             }
         } else {
             $state = true;//validation has passed
@@ -278,18 +319,6 @@ class FluentValidator implements LoggerAwareInterface
         return $state;
     }
 
-
-    /**
-     * get a numerically indexed flat array of the names of the failed rules.
-     * Useful if you just want to get all the results from a simple form
-     * Not so useful if you have lots of fields that share names, in that case get a structured tree of failures with getFailedRules()
-     * @return mixed
-     */
-    public function getFailedRuleNames(){
-        $out = [];
-       return $this->doGetFailedRuleNames($this->results,$out);
-
-    }
 
     /**
      * @param $results
@@ -318,15 +347,6 @@ class FluentValidator implements LoggerAwareInterface
         }
 
         return $out;
-    }
-
-    /**
-     * Get a tree of only failed results from the validator
-     * @return array
-     */
-    public function getFailedRules(){
-        $out = [];
-        return $this->doGetFailedRules($this->results, $out);
     }
 
     /**
@@ -361,17 +381,6 @@ class FluentValidator implements LoggerAwareInterface
         }
 
         return isset($out) ? $out : NULL;
-    }
-
-
-    /**
-     * convenience method to return an array of messages generated during the validation
-     * @return array
-     */
-    public function getMessages()
-    {
-        $out = [];
-        return $this->doGetMessages($this->results, $out);
     }
 
     /**
@@ -413,16 +422,6 @@ class FluentValidator implements LoggerAwareInterface
         }
 
         return $out;
-    }
-
-
-    /**
-     * If we get all the results we can see which elements actually failed validation and get their messages
-     * @return array|\Drupal\twhiston\FluentValidator\Result\ValidationResult[]
-     */
-    public function getResults()
-    {
-        return $this->results;
     }
 
 }

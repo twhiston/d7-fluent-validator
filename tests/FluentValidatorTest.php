@@ -442,7 +442,6 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
 
 
         //Our submitted array key has all the other keys under it, so add them all to the 'submitted' rule tree
-        //$sub->addRule($isn)->addRule($str)->addRule($post)->addRule($country);
         $sub->addRule($str)->addRule($country);
         //Validate the tree
         $vali = new FluentValidator();
@@ -458,8 +457,6 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertCount(2,$frn);
         $this->assertRegExp('/^street/',$frn[0]);
         $this->assertRegExp('/^country/',$frn[1]);
-
-        //TODO test get result by name
 
     }
 
@@ -651,7 +648,7 @@ class FluentValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($s);
 
         $r = $vali->getResults();
-        
+
     }
 
 }
