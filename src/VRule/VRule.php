@@ -114,4 +114,9 @@ class VRule
         return $this->tree;
     }
 
+    public function &refTree()
+    {
+        return $this->tree;
+    }
+
 }

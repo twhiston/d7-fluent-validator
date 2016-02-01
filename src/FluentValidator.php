@@ -153,8 +153,21 @@ class FluentValidator implements LoggerAwareInterface
      */
     public function addVRules($rules)
     {
-        (is_array($rules))?:array($rules);
+        $rules = (is_array($rules))?$rules:array($rules);
         $this->rules = array_merge($rules, $this->rules);
+
+        return $this;
+    }
+
+    /**
+     * Add an array of validation rules to the existing rules (array_merge)
+     * @param $rules
+     * @return $this
+     */
+    public function setVRules($rules)
+    {
+        (is_array($rules))?:array($rules);
+        $this->rules =$rules;
 
         return $this;
     }
