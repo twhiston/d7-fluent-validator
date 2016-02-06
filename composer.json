@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "twhiston/twLib": "dev-master",
+    "twhiston/twLib": "1.0.1",
     "psr/log": "^1.0"
   },
   "repositories": [
