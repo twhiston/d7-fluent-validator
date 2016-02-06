@@ -4,8 +4,8 @@ namespace Drupal\twhiston\FluentValidator;
 
 use Drupal\twhiston\FluentValidator\Constraint\CallableConstraint;
 use Drupal\twhiston\FluentValidator\VRule\VRule;
-use twhiston\twLib\Pointer\Stack;
-use twhiston\twLib\Pointer\Pointer;
+use twhiston\twLib\Reference\Stack;
+use twhiston\twLib\Reference\Reference;
 
 /**
  * Created by PhpStorm.
@@ -28,7 +28,7 @@ class TreeFactory
     public function __construct()
     {
         $this->tree = [];
-        $this->treePoint = new Pointer($this->tree);
+        $this->treePoint = new Reference($this->tree);
         $this->history = new Stack();
     }
 
@@ -38,7 +38,7 @@ class TreeFactory
         if($this->treePoint->getRef() instanceof VRule) {
             $this->history->takeReference($this->treePoint->getRef());//this should NOT be a reference, apparently
             $this->treePoint->getRef()->addRule(new VRule($name));
-            /** @var Pointer $t */
+            /** @var Reference $t */
             $t = &$this->history->top();
             $a = &$t->getRef()->refTree();
             $k = count($a)-1;

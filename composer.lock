@@ -51,7 +51,7 @@
             "source": {
                 "type": "git",
                 "url": "https://twhiston@bitbucket.org/twhiston/twlib.git",
-                "reference": "c4c0b2c09ad6e87cb35783006da90e232de15fc0"
+                "reference": "bcaa07b05a4cf0f91d51308147840001e35a1322"
             },
             "type": "library",
             "autoload": {
@@ -59,7 +59,7 @@
                     "twhiston\\twLib\\": "src"
                 }
             },
-            "time": "2016-02-05 23:33:53"
+            "time": "2016-02-06 15:48:54"
         }
     ],
     "packages-dev": [],
