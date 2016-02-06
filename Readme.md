@@ -1,7 +1,7 @@
-# Px_DrushOptionValidator
+# Fluent Validator
 
 Validating inputs is boring! This is a quick wrapper to standardize validation procedures. 
-It was made for drupal input, but you could use it anywhere.
+It was made for drupal form input, but you could use it anywhere.
 If you have standard validation classes to contribute that would be awesome.
 
 You can add your own Validation routines and pass them to the factory by using the fully qualified namespace as the name. 
@@ -23,7 +23,8 @@ $r2 = new VRule('anum',23);
 The most powerful constraint type is the CallableConstraint. You can call any function and pass it data by using this type.
 The constructor accepts a function name as a string or a lambda/closure
 
-See the unit tests for examples of these
+See the unit tests for examples of these.
+For creating sets of rules use the TreeFactory class, see tests for how to use this
  
 
 
