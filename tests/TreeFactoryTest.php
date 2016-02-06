@@ -69,10 +69,27 @@ class TreeFactoryTest extends PHPUnit_Framework_TestCase
         }
 
         $s = $vali->validate($data);
+        $this->assertTrue($s);
         $r = $vali->getResults();
 
+        //Make sure we have all the results that we should
+        $this->assertArrayHasKey('submitted',$r);
+        $this->assertArrayHasKey('number',$r['submitted']);
+        $this->assertArrayHasKey('street',$r['submitted']);
+        $this->assertArrayHasKey('postcode',$r['submitted']);
+        $this->assertArrayHasKey('town',$r['submitted']);
+        $this->assertArrayHasKey('country',$r['submitted']);
 
+        $this->assertArrayHasKey('details',$r);
+        $this->assertArrayHasKey('nid',$r['details']);
+        $this->assertArrayHasKey('sid',$r['details']);
+        $this->assertArrayHasKey('uid',$r['details']);
+        $this->assertArrayHasKey('page_num',$r['details']);
+        $this->assertArrayHasKey('page_count',$r['details']);
+        $this->assertArrayHasKey('finished',$r['details']);
 
+        $this->assertArrayHasKey('op',$r);
+        $this->assertArrayHasKey('form_token',$r);
 
     }
 
@@ -94,6 +111,7 @@ class TreeFactoryTest extends PHPUnit_Framework_TestCase
         $tf->startRule('magazine')
                 ->startRule('author')
                     ->addConstraint( new CallableConstraint(
+                        //you dont need to do this this way, you could just use 'is_string' as the arg for the Constraint
                         function($data){
                             if(is_string($data)){
                                 return new ValidationResult(TRUE);
@@ -150,6 +168,17 @@ class TreeFactoryTest extends PHPUnit_Framework_TestCase
         $s = $vali->clearResults()->validate($data);
         $r = $vali->getResults();
         $this->assertFalse($s);
+        $this->assertArrayHasKey('magazine',$r);
+        $this->assertArrayHasKey('author',$r['magazine']);
+        $this->assertArrayHasKey('publication',$r['magazine']);
+        $this->assertArrayHasKey('year',$r['magazine']);
+
+        $this->assertCount(2,$r['magazine']['year']);
+
+        $this->assertTrue($r['magazine']['author'][0]->getStatus());
+        $this->assertFalse($r['magazine']['publication'][0]->getStatus());
+        $this->assertFalse($r['magazine']['year'][0]->getStatus());
+        $this->assertFalse($r['magazine']['year'][1]->getStatus());
 
     }
 
