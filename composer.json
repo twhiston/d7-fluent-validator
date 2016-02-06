@@ -1,6 +1,6 @@
 {
-  "name": "Drupal/twhiston/FluentValidator",
-  "description": "Simple Option Validator",
+  "name": "twhiston/fluent-validator",
+  "description": "Simple Option Validator and Tree Builder",
   "authors": [
     {
       "name": "Tom Whiston",
