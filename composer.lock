@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c4b63186bd695daa6c777c364c69ce7b",
-    "content-hash": "f890b1a0fb6fe84b5a86c15aec85a6ed",
+    "hash": "99e157276c850c8061de77c55f6cf43c",
+    "content-hash": "5628cf2a9f0f423211661ea8131ae8a5",
     "packages": [
         {
             "name": "psr/log",
@@ -47,11 +47,11 @@
         },
         {
             "name": "twhiston/twLib",
-            "version": "dev-master",
+            "version": "dev-dev",
             "source": {
                 "type": "git",
                 "url": "https://twhiston@bitbucket.org/twhiston/twlib.git",
-                "reference": "ad8631945fee1618fbdb1d585c3d9233b99fc804"
+                "reference": "c4c0b2c09ad6e87cb35783006da90e232de15fc0"
             },
             "type": "library",
             "autoload": {
@@ -59,7 +59,7 @@
                     "twhiston\\twLib\\": "src"
                 }
             },
-            "time": "2016-01-27 22:59:31"
+            "time": "2016-02-05 23:33:53"
         }
     ],
     "packages-dev": [],

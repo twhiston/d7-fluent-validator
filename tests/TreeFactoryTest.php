@@ -1,5 +1,6 @@
 <?php
 
+include_once('D7Form.php');
 /**
  * Created by PhpStorm.
  * User: Thomas Whiston
@@ -17,9 +18,63 @@ use Drupal\twhiston\FluentValidator\Result\ValidationResult;
 
 use Drupal\twhiston\FluentValidator\FluentValidator;
 
-
+/**
+ * Class TreeFactoryTest
+ * @group new
+ */
 class TreeFactoryTest extends PHPUnit_Framework_TestCase
 {
+
+
+    public function testDrupalData(){
+
+        $data = getDrupalData();
+
+        $iss = new CallableConstraint('is_string');
+
+        $tf = new TreeFactory();
+        $tf->startRule('submitted')
+            ->startRule('number')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+            ->startRule('street')->addConstraint( $iss )->addConstraint( new CallableConstraint('is_null' , NULL, ['false' => TRUE]))->endRule()
+            ->startRule('postcode')
+                ->addConstraint( new CallableConstraint(
+                    function($data){
+                        //At least 2 numbers && last 3 characters are a number and a letter
+                        if(preg_match('/^(?=.*\d.*\d)/',$data) && preg_match('/.*[0-9]+[a-zA-Z]+[a-zA-Z]$/',$data)){
+                         return new ValidationResult(TRUE);
+                        }
+                        return new ValidationResult(FALSE);
+                    }
+                ))
+            ->endRule()
+            ->startRule('town')->addConstraint( $iss )->endRule()
+            ->startRule('country')->addConstraint( new CallableConstraint('strcmp', 'uk', [0 => TRUE ] ))->endRule()
+          ->endRule()
+          ->startRule('details')
+            ->startRule('nid')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+            ->startRule('sid')->endRule()
+            ->startRule('uid')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+            ->startRule('page_num')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+            ->startRule('page_count')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+            ->startRule('finished')->addConstraint( new CallableConstraint('is_numeric'))->endRule()
+          ->endRule()
+          ->startRule('op')->addConstraint(new CallableConstraint('strcmp','Submit',[0 => TRUE ]))->endRule()
+          ->startRule('form_token')->addConstraint(new CallableConstraint('is_null',NULL,['false' => TRUE]))->endRule();
+
+        $vali = new FluentValidator();
+        try {
+            $vali->setVRules($tf->getTree());
+        } catch (\Exception $e){
+            $this->assertTrue(FALSE);
+        }
+
+        $s = $vali->validate($data);
+        $r = $vali->getResults();
+
+
+
+
+    }
 
     public function testTreeFactory(){
 
@@ -97,5 +152,6 @@ class TreeFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($s);
 
     }
+
 
 }

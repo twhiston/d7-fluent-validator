@@ -246,6 +246,7 @@ class FluentValidator implements LoggerAwareInterface
             if (array_key_exists($name, $data)) {
                 $branches = $rule->getTree();
                 /** @var Constraint|VRule $branch */
+                if($branches == null) { continue;}
                 foreach ($branches as $branch) {
                     //are we a rule or a constraint
                     if (in_array(
