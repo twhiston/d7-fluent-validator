@@ -1,6 +1,7 @@
 {
   "name": "twhiston/fluent-validator",
   "description": "Simple Option Validator and Tree Builder",
+  "license": "MIT",
   "authors": [
     {
       "name": "Tom Whiston",
@@ -8,15 +9,10 @@
     }
   ],
   "require": {
-    "twhiston/twLib": "1.0.1",
+    "php": ">=5.5.0",
+    "twhiston/twlib": "1.0.1",
     "psr/log": "^1.0"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url":  "https://twhiston@bitbucket.org/twhiston/twlib.git"
-    }
-  ],
   "autoload": {
     "psr-4" : {
       "Drupal\\twhiston\\FluentValidator\\" : "src"

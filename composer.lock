@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1751c91e37be1a65d6776feda5c9028e",
-    "content-hash": "fd415af0366f57219c6d08daa2c095fa",
+    "hash": "e5224676bccc656774ffdef35bb7ec11",
+    "content-hash": "b4a2be8dd2a10f6c54644bd759ad456e",
     "packages": [
         {
             "name": "psr/log",
@@ -46,12 +46,21 @@
             "time": "2012-12-21 11:40:51"
         },
         {
-            "name": "twhiston/twLib",
+            "name": "twhiston/twlib",
             "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://twhiston@bitbucket.org/twhiston/twlib.git",
-                "reference": "ed0809f30a402d6413539de9e6fbca470fb3a30d"
+                "url": "https://bitbucket.org/twhiston/twlib.git",
+                "reference": "9c651b0075e5532c0bb0426840644368e66b78a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/twhiston/twlib/get/9c651b0075e5532c0bb0426840644368e66b78a7.zip",
+                "reference": "9c651b0075e5532c0bb0426840644368e66b78a7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
             },
             "type": "library",
             "autoload": {
@@ -59,7 +68,9 @@
                     "twhiston\\twLib\\": "src"
                 }
             },
-            "time": "2016-02-06 15:48:54"
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Some useful helper functions for PHP",
+            "time": "2016-02-06 17:52:54"
         }
     ],
     "packages-dev": [],
@@ -68,6 +79,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.5.0"
+    },
     "platform-dev": []
 }
