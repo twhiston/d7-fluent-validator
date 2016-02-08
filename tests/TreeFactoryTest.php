@@ -25,6 +25,29 @@ use Drupal\twhiston\FluentValidator\FluentValidator;
 class TreeFactoryTest extends PHPUnit_Framework_TestCase
 {
 
+    public function testGetFailedRules(){
+        $form_state = getDrupalFormState();
+        $vali = new FluentValidator();
+        $tree = new TreeFactory();
+        $tree->startRule('input')
+          ->startRule('title')->addConstraint(new CallableConstraint('ctype_digit',null,['false'=>TRUE]))->endRule()
+          ->startRule('body')->startRule('und')->startRule('0')
+          ->startRule('summary')->addConstraint( new CallableConstraint('is_string',null,['false'=>TRUE]))->endRule()
+          ->startRule('value')->addConstraint(new CallableConstraint('is_string',null,null))->endRule()
+          ->endRule()->endRule()->endRule()
+          ->endRule();
+        $vali->setVRules($tree->getTree());
+        $state = $vali->validate($form_state);
+        $fr = $vali->getFailedRules();
+        $this->assertArrayHasKey('input',   $fr);
+        $this->assertArrayHasKey('body',    $fr['input']);
+        $this->assertArrayHasKey('und',     $fr['input']['body']);
+        $this->assertArrayHasKey(0,         $fr['input']['body']['und']);
+        $this->assertArrayHasKey('summary', $fr['input']['body']['und'][0]);
+        $this->assertArrayHasKey(0,         $fr['input']['body']['und'][0]['summary']);
+        $this->assertInstanceOf('Drupal\\twhiston\\FluentValidator\\Result\\ValidationResult', $fr['input']['body']['und'][0]['summary'][0]);
+    }
+
 
     public function testDrupalData(){
 

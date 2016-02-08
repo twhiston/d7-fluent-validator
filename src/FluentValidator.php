@@ -372,29 +372,41 @@ class FluentValidator implements LoggerAwareInterface
     {
 
         foreach ($results as $rule => $constraints) {
-            $out[$rule] = [];
+            $isAr = false;
             /** @var ValidationResult $result */
-            if (!is_array($constraints)) {
+            if (is_array($constraints)) {
+                //If its an array we need to make an entry for it
+                $out[$rule] = [];
+                $isAr = true;//We made an array, we need to know this later
+            } else {
                 //Wrap non arrays to make the next bit play nice
                 $constraints = array($constraints);
             }
             foreach ($constraints as $name => $result) {
                 if (is_array($result)) {
                     //If the result is an array we need to drill down into it again
-                    $this->doGetFailedRules($result, $out[$rule],$name);
+                    $out[$rule][$name] = [];
+                    $this->doGetFailedRules($result, $out[$rule][$name]);
+                    if(count($out[$rule][$name]) === 0){
+                        unset($out[$rule][$name]);
+                    }
                 } else {
-                    $state = $result->getStatus();
-                    if ($state === FALSE) {
-                        $out[$rulename] = $result;
+                    $mes = $result;
+                    if ($mes !== null && $result->getStatus() === FALSE) {
+                        //This is kind of horrible, but to make it work and everything end up named properly it has to do this
+                        if ($isAr) {
+                            $out[$rule][] = $result;
+                        } else {
+                            $out[] = $result;
+                        }
                     }
                 }
             }
-            if(count($out[$rule]) == 0){
+            if(array_key_exists($rule,$out) && count($out[$rule]) === 0){
                 unset($out[$rule]);
             }
         }
-
-        return isset($out) ? $out : NULL;
+        return $out;
     }
 
     /**
