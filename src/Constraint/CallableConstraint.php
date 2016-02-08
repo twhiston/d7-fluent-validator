@@ -25,7 +25,7 @@ class CallableConstraint implements Constraint
      * The name or the callback function
      * @var
      */
-    private $callable;
+    protected $callable;
 
     /**
      * if your function does not return something that maps to a bool use this to remap it.
@@ -33,13 +33,13 @@ class CallableConstraint implements Constraint
      * For example for strcmp [ 0 => TRUE ] would be appropriate
      * @var null
      */
-    private $outputMap;
+    protected $outputMap;
 
     /***
      * extra arguments for your callable can be passed in here
      * @var array|null
      */
-    private $args;
+    protected $args;
 
     /**
      * CallableConstraint constructor.
