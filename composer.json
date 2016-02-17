@@ -17,5 +17,8 @@
     "psr-4" : {
       "Drupal\\twhiston\\FluentValidator\\" : "src"
     }
+  },
+  "require-dev": {
+    "mockery/mockery": "^0.9.4"
   }
 }
