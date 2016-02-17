@@ -1,5 +1,3 @@
 .idea
 vendor
-phpdoc.dist.xml
-phpunit.xml.dist
 phpdocs
